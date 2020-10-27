@@ -106,7 +106,7 @@ class Cedshopee
                     'Host: '.$host,
                     'Content-Length: '.strlen($jsonBody)
                 );
-
+echo '<pre>'; print_r($params);
                 $ch = curl_init();
                 curl_setopt($ch, CURLOPT_URL, $url);
                 curl_setopt($ch, CURLOPT_POST,       true);
@@ -115,7 +115,7 @@ class Cedshopee
                 curl_setopt($ch, CURLOPT_HEADER, true);
                 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
                 $response = curl_exec($ch);
-//                echo '<pre>'; print_r($response); die;
+                echo '<pre>'; print_r($response); die;
                 $servererror = curl_error($ch);
 
                 $header_size = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
