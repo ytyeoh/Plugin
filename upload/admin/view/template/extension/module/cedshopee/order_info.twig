@@ -1,0 +1,624 @@
+<!--
+/**
+* CedCommerce
+*
+* NOTICE OF LICENSE
+*
+* This source file is subject to the End User License Agreement (EULA)
+* that is bundled with this package in the file LICENSE.txt.
+* It is also available through the world-wide-web at this URL:
+* http://cedcommerce.com/license-agreement.txt
+*
+* @category  modules
+* @package   cedshopee
+* @author    CedCommerce Core Team 
+* @copyright Copyright CEDCOMMERCE (http://cedcommerce.com/)
+* @license   http://cedcommerce.com/license-agreement.txt
+*/
+-->
+{{ header }}{{ column_left }} 
+<div id="content">
+ <div class="page-header">
+    <div class="container-fluid">
+      <div class="pull-right">
+        {% if (order_status == 'ready') %} 
+          <a href="{{ acknowledge }}" target="_blank" data-toggle="tooltip" title="{{ button_acknowledge }}" class="btn btn-primary">{{ button_acknowledge }}</a>
+        {% endif %} 
+        {% if (order_status == 'acknowledged') %} 
+          <a href="{{ shipment }}" target="_blank" data-toggle="tooltip" title="{{ button_shipment }}" class="btn btn-success">{{ button_shipment }}</a>
+        {% endif %} 
+          <a href="{{ back }}" data-toggle="tooltip" title="{{ button_back }}" class="btn btn-default"><i class="fa fa-reply"></i></a>
+      </div>
+      <h1>{{ heading_title }}</h1>
+      <ul class="breadcrumb">
+        {% for breadcrumb in breadcrumbs %} 
+        <li><a href="{{ breadcrumb['href'] }}">{{ breadcrumb['text'] }}</a></li>
+        {% endfor %} 
+      </ul>
+    </div>
+  </div>
+
+  <div class="container-fluid">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title"><i class="fa fa-pencil"></i> {{ text_edit }}</h3>
+      </div>
+      <div class="panel-body">
+        <form action="" method="post" id="form-cedshopee" class="form-horizontal">
+          <ul class="nav nav-tabs">
+            <li class="active"><a href="#tab-order" data-toggle="tab">{{ tab_order }}</a></li>
+            <li><a href="#tab-payment" data-toggle="tab">{{ tab_payment }}</a></li>
+            {% if (shipping_method) %} 
+            <li><a href="#tab-shipping" data-toggle="tab">{{ tab_shipping }}</a></li>
+            {% endif %} 
+            <li><a href="#tab-product" data-toggle="tab">{{ tab_product }}</a></li>
+
+            <li><a href="#cedshopee-order" data-toggle="tab">{{ tab_worder }}</a></li>
+            <li><a href="#cedshopee-shipment" data-toggle="tab">{{ tab_wshipment }}</a></li>
+            <li><a href="#cedshopee-cancel" data-toggle="tab">{{ tab_cancel }}</a></li>
+          </ul>
+          <div class="tab-content">
+            <!-- tab order -->
+            <div id="tab-order" class="tab-pane active in">
+              <div class="form-group">
+                <label class="col-sm-2 control-label">{{ text_order_id }}</label>
+                <div class="col-sm-10">
+                    <p>#{{ order_id }}</p>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="col-sm-2 control-label">{{ text_store_name }}</label>
+                <div class="col-sm-10">
+                    <p>{{ store_name }}</p>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="col-sm-2 control-label">{{ text_store_url }}</label>
+                <div class="col-sm-10">
+                    <p><a href="{{ store_url }}" target="_blank">{{ store_url }}</a></p>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="col-sm-2 control-label">{{ text_customer }}</label>
+                <div class="col-sm-10">
+                  {% if (customer) %}
+                    <p><a href="{{ customer }}" target="_blank">{{ firstname }} {{ lastname }}</a></p>
+                  {% else %} 
+                    <p>{{ firstname }} {{ lastname }}</p>
+                  {% endif %}
+                </div>
+              </div>
+
+              {% if (customer_group) %}
+              <div class="form-group">
+                <label class="col-sm-2 control-label">{{ text_customer_group }}</label>
+                <div class="col-sm-10">
+                    <p>{{ customer_group }}</p>
+                </div>
+              </div>
+              {% endif %}
+
+              <div class="form-group">
+                <label class="col-sm-2 control-label">{{ text_email }}</label>
+                <div class="col-sm-10">
+                    <p><a href="mailto:{{ email }}">{{ email }}</a></p>
+                </div>
+              </div> 
+
+              <div class="form-group">
+                <label class="col-sm-2 control-label">{{ text_telephone }}</label>
+                <div class="col-sm-10">
+                    <p>{{ telephone }}</p>
+                </div>
+              </div> 
+
+              <div class="form-group">
+                <label class="col-sm-2 control-label">{{ text_total }}</label>
+                <div class="col-sm-10">
+                    <p>{{ total }}</p>
+                </div>
+              </div> 
+
+              {% if (order_status) %}
+              <div class="form-group">
+                <label class="col-sm-2 control-label">{{ text_order_status }}</label>
+                <div class="col-sm-10">
+                    <p id="order-status">{{ order_status }}</p>
+                </div>
+              </div>
+              {% endif %}
+
+              <div class="form-group">
+                <label class="col-sm-2 control-label">{{ text_date_added }}</label>
+                <div class="col-sm-10">
+                    <p>{{ date_added }}</p>
+                </div>
+              </div> 
+
+              <div class="form-group">
+                <label class="col-sm-2 control-label">{{ text_date_modified }}</label>
+                <div class="col-sm-10">
+                    <p>{{ date_modified }}</p>
+                </div>
+              </div> 
+            </div>
+            <!-- // tab order -->
+
+            <!-- tab payment -->
+            <div class="tab-pane fade" id="tab-payment">
+              <div class="form-group">
+                <label class="col-sm-2 control-label">{{ text_firstname }}</label>
+                <div class="col-sm-10">
+                  <p>{{ payment_firstname }}</p>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="col-sm-2 control-label">{{ text_lastname }}</label>
+                <div class="col-sm-10">
+                  <p>{{ payment_lastname }}</p>
+                </div>
+              </div>
+
+              {% if (payment_company) %} 
+              <div class="form-group">
+                <label class="col-sm-2 control-label">{{ text_company }}</label>
+                <div class="col-sm-10">
+                  <p>{{ payment_company }}</p>
+                </div>
+              </div>
+              {% endif %}
+
+              <div class="form-group">
+                <label class="col-sm-2 control-label">{{ text_address_1 }}</label>
+                <div class="col-sm-10">
+                  <p>{{ payment_address_1 }}</p>
+                </div>
+              </div>
+
+              {% if (payment_address_2) %} 
+              <div class="form-group">
+                <label class="col-sm-2 control-label">{{ text_address_2 }}</label>
+                <div class="col-sm-10">
+                  <p>{{ payment_address_2 }}</p>
+                </div>
+              </div>
+              {% endif %} 
+
+              <div class="form-group">
+                <label class="col-sm-2 control-label">{{ text_city }}</label>
+                <div class="col-sm-10">
+                  <p>{{ payment_city }}</p>
+                </div>
+              </div>
+
+              {% if (payment_postcode) %} 
+              <div class="form-group">
+                <label class="col-sm-2 control-label">{{ text_postcode }}</label>
+                <div class="col-sm-10">
+                  <p>{{ payment_postcode }}</p>
+                </div>
+              </div>
+              {% endif %}
+
+              <div class="form-group">
+                <label class="col-sm-2 control-label">{{ text_zone }}</label>
+                <div class="col-sm-10">
+                  <p>{{ payment_zone }}</p>
+                </div>
+              </div>
+
+              {% if (payment_zone_code) %} 
+              <div class="form-group">
+                <label class="col-sm-2 control-label">{{ text_zone_code }}</label>
+                <div class="col-sm-10">
+                  <p>{{ payment_zone_code }}</p>
+                </div>
+              </div>
+              {% endif %} 
+
+              <div class="form-group">
+                <label class="col-sm-2 control-label">{{ text_country }}</label>
+                <div class="col-sm-10">
+                  <p>{{ payment_country }}</p>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="col-sm-2 control-label">{{ text_payment_method }}</label>
+                <div class="col-sm-10">
+                  <p>{{ payment_method }}</p>
+                </div>
+              </div>
+              {{ payment_action }}
+            </div>
+            <!-- // tab payment -->
+
+            <!-- tab shipping -->
+            {% if (shipping_method) %} 
+            <div class="tab-pane fade" id="tab-shipping">
+              <div class="form-group">
+                <label class="col-sm-2 control-label">{{ text_firstname }}</label>
+                <div class="col-sm-10">
+                  <p>{{ shipping_firstname }}</p>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="col-sm-2 control-label">{{ text_lastname }}</label>
+                <div class="col-sm-10">
+                  <p>{{ shipping_lastname }}</p>
+                </div>
+              </div>
+
+              {% if (shipping_company) %} 
+              <div class="form-group">
+                <label class="col-sm-2 control-label">{{ text_company }}</label>
+                <div class="col-sm-10">
+                  <p>{{ shipping_company }}</p>
+                </div>
+              </div>
+              {% endif %}
+
+              <div class="form-group">
+                <label class="col-sm-2 control-label">{{ text_address_1 }}</label>
+                <div class="col-sm-10">
+                  <p>{{ shipping_address_1 }}</p>
+                </div>
+              </div>
+
+              {% if (shipping_address_2) %} 
+              <div class="form-group">
+                <label class="col-sm-2 control-label">{{ text_address_2 }}</label>
+                <div class="col-sm-10">
+                  <p>{{ shipping_address_2 }}</p>
+                </div>
+              </div>
+              {% endif %} 
+
+              <div class="form-group">
+                <label class="col-sm-2 control-label">{{ text_city }}</label>
+                <div class="col-sm-10">
+                  <p>{{ shipping_city }}</p>
+                </div>
+              </div>
+
+              {% if (shipping_postcode) %} 
+              <div class="form-group">
+                <label class="col-sm-2 control-label">{{ text_postcode }}</label>
+                <div class="col-sm-10">
+                  <p>{{ shipping_postcode }}</p>
+                </div>
+              </div>
+              {% endif %}
+
+              <div class="form-group">
+                <label class="col-sm-2 control-label">{{ text_zone }}</label>
+                <div class="col-sm-10">
+                  <p>{{ shipping_zone }}</p>
+                </div>
+              </div>
+
+              {% if (shipping_zone_code) %} 
+              <div class="form-group">
+                <label class="col-sm-2 control-label">{{ text_zone_code }}</label>
+                <div class="col-sm-10">
+                  <p>{{ shipping_zone_code }}</p>
+                </div>
+              </div>
+              {% endif %} 
+
+              <div class="form-group">
+                <label class="col-sm-2 control-label">{{ text_country }}</label>
+                <div class="col-sm-10">
+                  <p>{{ shipping_country }}</p>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="col-sm-2 control-label">{{ text_shipping_method }}</label>
+                <div class="col-sm-10">
+                  <p>{{ shipping_method }}</p>
+                </div>
+              </div>
+            </div>
+            {% endif %} 
+            <!-- //tab shipping -->
+
+            <!-- tab product -->
+            <div id="tab-product" class="tab-pane fade">
+             <table class="table table-bordered table-hover">
+              <thead>
+                <tr>
+                  <td class="text-left"><label class="control-label">{{ column_product }}</label></td>
+                  <td class="text-left"><label class="control-label">{{ column_model }}</label></td>
+                  <td class="text-right"><label class="control-label">{{ column_quantity }}</label></td>
+                  <td class="text-right"><label class="control-label">{{ column_price }}</label></td>
+                  <td class="text-right"><label class="control-label">{{ column_total }}</label></td>
+                </tr>
+              </thead>
+              <tbody>
+                {% for product in products %} 
+                <tr>
+                  <td class="text-left">
+                    <a href="{{ product['href'] }}">{{ product['name'] }}</a>
+                    {% for option in product['option'] %} 
+                    <br />
+                    {% if (option['type'] != 'file') %} 
+                      &nbsp;<small> - {{ option['name'] }}: {{ option['value'] }}</small>
+                    {% else %} 
+                      &nbsp;<small> - {{ option['name'] }}: 
+                    <a href="{{ option['href'] }}">{{ option['value'] }}</a></small>
+                    {% endif %} 
+                    {% endfor %}
+                  </td>
+                  <td class="text-left">{{ product['model'] }}</td>
+                  <td class="text-right">{{ product['quantity'] }}</td>
+                  <td class="text-right">{{ product['price'] }}</td>
+                  <td class="text-right">{{ product['total'] }}</td>
+                </tr>
+                {% endfor %} 
+              </tbody>
+              {% for totals in totals %} 
+              <tbody id="totals">
+                <tr>
+                  <td colspan="4" class="text-right">{{ totals['title'] }}:</td>
+                  <td class="text-right">{{ totals['text'] }}</td>
+                </tr>
+              </tbody>
+              {% endfor %} 
+             </table>
+            </div>
+            <!-- // tab product -->
+
+            <!-- tab cedshopee-order -->
+            <div class="tab-pane fade" id="cedshopee-order">
+             {% if (is_cedshopee_order) %} 
+              {% if (orders) %} 
+                <h2>Order Details </h2>
+                {% for key,order in orders %} 
+                  <div class="form-group">
+                    <label class="col-sm-2 control-label">{{ key }} - </label>
+                    <div class="col-sm-10">
+                      <p>{{ order }}</p>
+                    </div>
+                  </div>
+                {% endfor %}
+              {% endif %} 
+
+              {% if (shippingInfo) %} 
+                <h2>Order Shipping Info </h2>
+                {% for key,shipping in shippingInfo %}
+                  <div class="form-group">
+                    <label class="col-sm-2 control-label">{{ key }} - </label>
+                    <div class="col-sm-10"> 
+                      <p>{{ shipping }}</p>
+                    </div>
+                  </div>
+                {% endfor %}
+              {% endif %}
+
+              {% if (wproducts) %} 
+                <h2>Order Products </h2>
+                {% for index,product in wproducts %}
+                  <h2>Ordered Item {{ index+1 }} </h2>
+                  {% for key,prod in product %}
+                    <div class="form-group">
+                      <label class="col-sm-2 control-label">{{ key }} - </label>
+                      <div class="col-sm-10">
+                        <p>{{ prod }}</p>
+                      </div>
+                    </div>
+                  {% endfor %}
+                {% endfor %}
+              {% endif %}  
+             {% endif %} 
+            </div> 
+            <!-- // tab cedshopee-order -->
+
+            <!-- tab cedshopee-shipment -->
+            {% if cedshopee_shipment %} 
+            <div class="tab-pane fade" id="cedshopee-shipment">
+              <div id="shipment">
+                {% set shipmentdata=[] %}
+                  {% if (cedshopee_shipment['shipments'] is defined and cedshopee_shipment['shipments']) %} 
+                    {% for shipments in cedshopee_shipment['shipments'] %} 
+                      {% for key,shipment in shipments %} 
+                        {% if shipment %}
+                          {% set shipmentdata = shipmentdata|merge({key : shipment}) %}
+                        {% endif %} 
+                        <div class="form-group">
+                          <label class="col-sm-2 control-label">{{ key }}</label>
+                          <div class="col-sm-10">
+                            <p>{% if (not shipment) %} {{ shipment }}{% endif %} </p>
+                          </div>
+                        </div>
+                      {% endfor %}
+                    {% endfor %}
+                  {% endif %}
+
+                  {% set returndata=[] %}
+                  {% if (shipmentdata['shipment_items'] is defined and shipmentdata['shipment_items']) %}  
+                    {% for shipments in shipmentdata['shipment_items'] %}
+                      {% for key,shipment in shipments %}  
+                        {% if shipment %}
+                          {% set returndata = returndata|merge({key : shipment}) %}
+                        {% endif %} 
+                        <div class="form-group">
+                          <label class="col-sm-2 control-label">{{ key }}</label>
+                          <div class="col-sm-10">
+                            <p>{{ shipment }} </p>
+                          </div>
+                        </div>
+                      {% endfor %}
+                    {% endfor %}
+                  {% endif %}
+
+                  {% set extra=[] %}
+                  {% if (returndata['return_location'] is defined and returndata['return_location']) %}   
+                    {% for l,shipments in returndata['return_location'] %} 
+                      {% if shipments %}
+                        {% set extra = extra|merge({l : shipments}) %}
+                      {% endif %} 
+                      <div class="form-group">
+                        <label class="col-sm-2 control-label">{{ l }}</label>
+                        <div class="col-sm-10">
+                          <p>{{ shipments }} </p>
+                        </div>
+                      </div>
+                    {% endfor %}
+                  {% endif %}
+              </div>
+            </div>
+            {% else %} 
+            <div class="tab-pane fade" id="cedshopee-shipment">
+              <input type="hidden" id="ordersn" name='ordersn' value="{{ orders['ordersn'] }}"  />
+              <div class="form-group">
+                <label class="col-sm-2 control-label">Ordersn</label>
+                <div class="col-sm-10">
+                  <p>{{ orders['ordersn'] }}</p>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="col-sm-2 control-label">{{ text_trackingNumber }}</label>
+                <div class="col-sm-10">
+                  <input type="text" id="trackingNumber" name="trackingNumber" value="{{ trackingNumber }}" class="form-control" />
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="col-sm-2 control-label"></label>
+                <div class="col-sm-10">
+                  <button onclick="ship();" class="btn btn-success" title="Ship Order">Ship</button>
+                  <div id="progress"></div>
+                </div>
+              </div>
+            </div>
+            {% endif %} 
+            <!-- // tab cedshopee-shipment -->
+
+            <!-- tab cedshopee-cancel -->
+            <div class="tab-pane fade" id="cedshopee-cancel">
+              <input type="hidden" id="ordersn" name='ordersn' value="{{ orders['ordersn'] }}"/>
+              <div class="form-group">
+                <label class="col-sm-2 control-label">Ordersn</label>
+                <div class="col-sm-10">
+                  <p>{{ orders['ordersn'] }}</p>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="col-sm-2 control-label">Reason</label>
+                <div class="col-sm-10">
+                  <select id="cancel_reason" name="cancel_reason" class="form-control">
+                    {% for cancel_reason in cancel_reasons %} 
+                      <option value="{{ cancel_reason }}" >{{ cancel_reason }}</option>
+                    {% endfor %}
+                  </select>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="col-sm-2 control-label"></label>
+                <div class="col-sm-10">
+                  <button onclick="cancel();" class="btn btn-danger" title="Cancel Order"><i class="fa fa-ban"></i></button>
+                  <div id="progress-c"></div>
+                </div>
+              </div>
+            </div>
+            <!-- // tab cedshopee-cancel -->   
+          </div>
+        </form>
+      </div>
+      <!-- // panel-body -->
+    </div>
+  </div>
+</div>
+
+<script type="text/javascript"><!--
+$('.tabs').tabs();
+//--></script>
+<style>
+  p {
+    /*margin-left: 19em;*/
+  }
+</style>
+<script type="text/javascript">
+  function ship()
+  {
+    $.ajax({
+      type: "POST",
+      url: 'index.php?route=extension/module/cedshopee/order/ship&user_token='+'{{ user_token }}',
+      data: {'tracking_number': $("#trackingNumber").val(),'ordersn':$("#ordersn").val()},
+      success: function (response) {
+        console.log(response);
+        if (response) {
+          var obj = response;
+          if (obj.success) {
+            $("#progress").append('<li class="success" >' + obj.message + '</li>');
+          } else {
+            $("#progress").append('<li class="warning" >' + obj.error + '</li>');
+          }
+        }
+      },
+      statusCode: {
+        500: function (xhr) {
+          if (window.console) console.log(xhr.responseText);
+        },
+        400: function (response) {
+          alert('<span style="color:Red;">Error While Uploading Please Check</span>');
+        },
+        404: function (response) {
+
+          alert('<span style="color:Red;">Error While Uploading Please Check</span>');
+        }
+      },
+      error: function (xhr, ajaxOptions, thrownError) {
+        if (window.console) console.log(xhr.responseText);
+        alert(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+      },
+    });
+  };
+</script>
+
+<script type="text/javascript">
+function cancel(){
+  $.ajax({
+    type: "POST",
+    url: 'index.php?route=extension/module/cedshopee/order/cancel&user_token='+'{{ user_token }}',
+    data: {'cancel_reason' : $("#cancel_reason").val(),'ordersn':$("#ordersn").val()},
+    success: function (response) {
+      console.log(response);
+      if (response) {
+        var obj = response;
+        if (obj.success) {
+          $("#progress-c").append('<li class="success" >' + obj.message + '</li>');
+        } else {
+          $("#progress-c").append('<li class="warning" >' + obj.error + '</li>');
+        }
+      }
+    },
+    statusCode: {
+      500: function (xhr) {
+        if (window.console) console.log(xhr.responseText);
+      },
+      400: function (response) {
+        alert('<span style="color:Red;">Error While Uploading Please Check</span>');
+      },
+      404: function (response) {
+
+        alert('<span style="color:Red;">Error While Uploading Please Check</span>');
+      }
+    },
+    error: function (xhr, ajaxOptions, thrownError) {
+      if (window.console) console.log(xhr.responseText);
+      alert(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+    },
+  });
+};
+</script>
+{{ footer }} 

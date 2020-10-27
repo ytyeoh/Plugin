@@ -1,0 +1,649 @@
+{{ header }}{{ column_left }} 
+<div id="content">
+  <div class="page-header">
+    <div class="container-fluid">
+      <div class="pull-right">
+        <a onclick="$('#form').submit();" class="btn btn-primary" title="{{ button_save }}"><i class="fa fa-save"></i></a>
+        <a href="{{ cancel }}" data-toggle="tooltip" title="{{ button_cancel }}" class="btn btn-default"><i class="fa fa-reply"></i></a>
+        </div>
+      <h1>{{ heading_title }}</h1>
+      <ul class="breadcrumb">
+        {% for breadcrumb in breadcrumbs %} 
+        <li><a href="{{ breadcrumb['href'] }}">{{ breadcrumb['text'] }}</a></li>
+        {% endfor %} 
+      </ul>
+    </div>
+  </div>
+    
+    <div class="container-fluid">
+      {% if (error_warning) %} 
+        <div class="alert alert-danger"><i class="fa fa-exclamation-circle"></i> {{ error_warning }} 
+          <button type="button" class="close" data-dismiss="alert">&times;</button>
+        </div>
+        {% endif %} 
+
+        <div class="panel panel-default">
+          <div class="panel-heading">
+            <h3 class="panel-title"><i class="fa fa-pencil"></i> {{ text_form }}</h3>
+          </div>
+            <div class="panel-body">
+               <form action="{{ action }}" method="post" enctype="multipart/form-data" id="form">
+               <ul class="nav nav-tabs">
+                <li class="active"><a href="#tab-general" data-toggle="tab">{{ tab_general }}</a></li>
+                <li><a href="#tab-store" data-toggle="tab">{{ tab_store_category }}</a></li>
+                <li><a href="#tab-shopee" data-toggle="tab">{{ tab_shopee_category }}</a></li>
+                <li><a href="#tab-attribute" data-toggle="tab">{{ tab_shopee_attributes }}</a></li>
+                </ul>
+                <div class="tab-content">
+                    <div class="tab-pane active in" id="tab-general">
+                            
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label" for="input-title">{{ entry_title }}</label>
+                            <div class="col-sm-10">
+                              <input type="text" name="title" id="input-title" value="{{ title }}" class="form-control" />
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label" for="input-status">{{ entry_status }}</label>
+                            <div class="col-sm-10">
+                                <select name="status" id="input-status" class="form-control">
+                                    {% if (status) %} 
+                                    <option value="1" selected="selected">{{ text_enabled }}</option>
+                                    <option value="0">{{ text_disabled }}</option>
+                                    {% else %} 
+                                    <option value="1">{{ text_enabled }}</option>
+                                    <option value="0" selected="selected">{{ text_disabled }}</option>
+                                    {% endif %} 
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label" for="input-manufacturer">{{ entry_manufacturer }}</label>
+                            <div class="col-sm-10">
+                                <input type="text" name="manufacturer" value="" id="input-manufacturer" class="form-control" />
+
+                                <div id="product_manufacturer" class="well well-sm" style="height: 150px; overflow: auto;">
+                                    {% for product_manufacturer in product_manufacturers %} 
+                                    <div id="product_manufacturer{{ product_manufacturer['manufacturer_id'] }}"><i class="fa fa-minus-circle"></i> {{ product_manufacturer['name'] }} 
+                                        <input type="hidden" name="product_manufacturer[]" value="{{ product_manufacturer['manufacturer_id'] }}" />
+                                    </div>
+                                    {% endfor %} 
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label" for="input-category">{{ entry_category }}</label>
+                            <div class="col-sm-10">
+                                <input type="text" name="category" value="" id="input-category" class="form-control" />
+                                <div id="product-category" class="well well-sm" style="height: 150px; overflow: auto;">
+                                    {% for product_category in product_categories %} 
+                                    <div id="product-category{{ product_category['category_id'] }}"><i class="fa fa-minus-circle"></i> {{ product_category['name'] }} 
+                                        <input type="hidden" name="product_category[]" value="{{ product_category['category_id'] }}" />
+                                    </div>
+                                    {% endfor %} 
+                                </div>
+                            </div>
+                        </div>
+                            
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label" for="input-store">{{ entry_store }}</label>
+                            <div class="col-sm-10">
+                                <div class="well well-sm" style="height: 150px; overflow: auto;">
+                                    <div class="checkbox">
+                                        <label>
+                                            {% if 0 in profile_store %}
+                                                <input type="checkbox" name="profile_store[]" value="0" checked="checked"/>
+                                                {{ text_default }}
+                                            {% else %}
+                                                <input type="checkbox" name="profile_store[]" value="0"/>
+                                                {{ text_default }}
+                                            {% endif %}
+                                        </label>
+                                    </div>
+                                    {% for store in stores %}
+                                        <div class="checkbox">
+                                            <label>
+                                                {% if store.store_id in profile_store %}
+                                                    <input type="checkbox" name="profile_store[]" value="{{ store.store_id }}" checked="checked"/>
+                                                    {{ store.name }}
+                                                {% else %}
+                                                    <input type="checkbox" name="profile_store[]" value="{{ store.store_id }}"/>
+                                                    {{ store.name }}
+                                                {% endif %}
+                                            </label>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label" for="input-language">{{ entry_language }}</label>
+                            <div class="col-sm-10">
+                              <select name="profile_language" id="input-language" class="form-control">
+                                    {% for language in languages %} 
+                                      {% if (profile_language == language['language_id']) %} 
+                                        <option value="{{ language['language_id'] }}"
+                                            selected="selected">{{ language['name'] }}</option>
+                                      {% else %} 
+                                        <option value="{{ language['language_id'] }}">{{ language['name'] }}</option>
+                                      {% endif %} 
+                                    {% endfor %} 
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- General Tab Ends here -->
+
+                    <div class="tab-pane fade" id="tab-store">
+                        
+                        <div class="form-group" style="background: #cacac1; height: 25px; padding: 3px 0 0 0; ">
+                            <label class="col-sm-2 control-label" for="input-shopee-attribute">{{ entry_shopee_attribute }}</label>
+                            <label class="col-sm-10 control-label" for="input-store-attribute">{{ entry_store_attribute }}</label>
+                        </div>
+                            
+                        {% for shopeeAttr,default_attribute in default_map_attributes %} 
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label text-left" for="input-shopee-attr">{{ shopeeAttr }}</label>
+                                <div class="col-sm-10">
+                                    {% if (shopeeAttr != 'days_to_ship') %} 
+                                        <select name="default_mapping[{{ shopeeAttr }}]" id="{{ shopeeAttr }}" class="form-control">
+                                            <option value=""></option>
+                                            {% for code,attribute in default_attributes %} 
+                                            {% if (default_attribute == code) %} 
+                                            <option selected="selected" value="{{ code }}">{{ attribute }}</option>
+                                            {% else %} 
+                                            <option value="{{ code }}">{{ attribute }}</option>
+                                            {% endif %} 
+                                            {% endfor %} 
+                                        </select>
+                                    {% else %} 
+                                        <input type="text" name="default_mapping[{{ shopeeAttr }}]" value="{{ default_attribute }}" id="input-shopee-attr" class="form-control"/>
+                                    {% endif %} 
+                                </div>
+                            </div>
+                        {% endfor %} 
+                    </div>
+                    <!-- Store Tab Ends here -->
+
+                    <div class="tab-pane fade" id="tab-shopee">
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label" for="input-shopee-category">{{ entry_shopee_category }}</label>
+                            <div class="col-sm-10">
+                               <input type="text" value="{{ shopee_category_name }}" name="shopee_category" id="input-shopee-category" class="form-control" style="width: 96%; padding: 1%;margin-top: 8px;margin-bottom: 8px;" />
+                                <input type="hidden" name="shopee_category_id" value="{{ shopee_category }}"/>
+                            </div>
+                        </div>
+                        <div id="attribute_section">
+                            <table class="table table-bordered">
+                                <thead>
+                                    <td class="text-center">Shopee Attributes</td>
+                                    <td class="text-center">Set Default Value</td>
+                                    <td class="text-center">Map With Store Attributes</td>
+                                </thead>
+                                <tbody id="mapping_values">
+
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <!-- Shopee Tab Ends here -->
+
+                    <div class="tab-pane fade" id="tab-attribute">
+                        <h2> Logistics</h2>
+
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-hover">
+                                <thead>
+                                    <tr>
+                                        <th width="1" style="text-align: center;"><input type="checkbox" onclick="$('input[name*=\'selected\']').attr('checked', this.checked);"/></th>
+                                        <th><label class="control-label" for="input-logistics">{{ entry_logistics }}</label></th>
+                                        <th><label class="control-label" for="input-is_free">{{ entry_is_free }}</label></th>
+                                        <th><label class="control-label" for="input-shipping_fee">{{ entry_shipping_fee }}</label></th>
+                                        <th><label class="control-label" for="input-size-selection">Size Selection (needed if selected logistics have fee_type = SIZE_SELECTION)</label></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                   {% set count = '0' %}
+                                    {% for logistic in logistics_list %}
+                                
+                                    <tr>
+                                        <td style="text-align: center;">
+                                            {% if logistics[count]['selected'] is defined and logistic['logistic_id'] == logistics[count]['selected'] %}
+                                            <input type="checkbox" name="logistics[{{ count }}][selected]" value="{{ logistic['logistic_id'] }}" checked="checked"/>
+                                            {% else %}
+                                            <input type="checkbox" name="logistics[{{ count }}][selected]" value="{{ logistic['logistic_id'] }}"/>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            <input type="hidden" name="logistics[{{ count }}][logistics]" value="{{ logistic['logistic_id'] }}" class="form-control" />
+
+                                            <input type="text" name="logistics[{{ count }}][logistic_name]" value="{{ logistic['logistic_name'] }}" class="form-control" readonly="readonly" />
+                                        </td>
+                                        <td>
+                                            <select name="logistics[{{ count }}][is_free]" id="input-is_free" class="form-control">
+                                                {% if (logistics[count]['is_free']) %}
+                                                    <option value="1" selected="selected">{{ text_enabled }}</option>
+                                                    <option value="0">{{ text_disabled }}</option>
+                                                {% else %}
+                                                    <option value="1">{{ text_enabled }}</option>
+                                                    <option value="0" selected="selected">{{ text_disabled }}</option>
+                                                {% endif %}
+                                            </select>
+                                        </td>
+                                        <td>
+                                            <input type="text" name="logistics[{{ count }}][shipping_fee]" id="input-shipping_fee" value="{{ logistics[count]['shipping_fee'] }}" class="form-control"
+                                            {% if (logistic['fee_type'] is defined) and (logistic['fee_type'] == 'CUSTOM_PRICE') %} style="border: 1px solid green;" {% else %} {% endif %} />
+                                        </td>
+                                        <td>
+                                            <select name="logistics[{{ count }}][size_selection]" id="input-size-selection" class="form-control" >
+                                                {% if (logistic['fee_type'] is defined) and (logistic['fee_type'] == 'SIZE_SELECTION') %}
+                                                {# {% set sizes = logistic['sizes']|json_decode %} #} 
+                                                {% for key,size in logistic['sizes'] %}
+
+                                                <option value="{{ size.size_id }}" {% if (logistic[count]['size_selection'] is defined) and (logistic[count]['size_selection'] == size['size_id']) %} selected="selected" {% endif %} >{{ size['name'] }}</option>
+                                                {% endfor %}
+                                                {% else %}
+                                                <option value=""></option>
+                                                {% endif %}
+                                            </select>
+                                        </td>
+                                    </tr>
+                                   {% set count = count + 1 %}
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                          
+                        <h2> Wholesales</h2>
+                        <br/>
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-hover">
+                                <thead>
+                                <tr>
+                                    <th><label class="control-label" for="input-wholesale_min">{{ entry_wholesale_min }}</label></th>
+                                    <th><label class="control-label" for="input-wholesale_max">{{ entry_wholesale_max }}</label></th>
+                                    <th><label class="control-label" for="input-wholesale_unit_price">{{ entry_wholesale_unit_price }}</label></th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr>
+                                    <td><input type="text" name="wholesale[wholesale_min]" value="{{ wholesale['wholesale_min'] is defined ? wholesale['wholesale_min'] : '' }}" placeholder="" id="input-wholesale_min" class="form-control" /></td>
+                                    <td><input type="text" name="wholesale[wholesale_max]" value="{{ wholesale['wholesale_max'] is defined ? wholesale['wholesale_max'] : '' }}" placeholder="" id="input-wholesale_max" class="form-control"/></td>
+                                    <td><input type="text" name="wholesale[wholesale_unit_price]" value="{{ wholesale['wholesale_unit_price'] is defined ? wholesale['wholesale_unit_price'] : '' }}" placeholder="" id="input-wholesale_unit_price" class="form-control" /></td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+               </form>
+           </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    var shopee_attributes = [];
+</script>
+
+<script type="text/javascript">
+// Manufacturer
+        $('input[name=\'manufacturer\']').autocomplete({
+            'source': function(request, response) {
+                $.ajax({
+                    url: 'index.php?route=catalog/manufacturer/autocomplete&user_token={{ user_token }}&filter_name=' +  encodeURIComponent(request),
+                    dataType: 'json',
+                    success: function(json) {
+                        json.unshift({
+                            manufacturer_id: 0,
+                            name: '--None--'
+                        });
+                        response($.map(json, function(item) {
+                            return {
+                                label: item['name'],
+                                value: item['manufacturer_id']
+                            }
+                        }));
+                    }
+                });
+            },
+            'select': function(item) {
+                $('input[name=\'product_manufacturer\']').val('');
+
+                $('#product_manufacturer' + item['value']).remove();
+
+                $('#product_manufacturer').append('<div id="product_manufacturer' + item['value'] + '"><i class="fa fa-minus-circle"></i> ' + item['label'] + '<input type="hidden" name="product_manufacturer[]" value="' + item['value'] + '" /></div>');
+            }
+        });
+
+    $('#product_manufacturer').delegate('.fa-minus-circle', 'click', function() {
+        $(this).parent().remove();
+    });
+</script>
+
+<script type="text/javascript">
+    // Store Category
+    $('input[name=\'category\']').autocomplete({
+        'source': function(request, response) {
+            $.ajax({
+                url: 'index.php?route=catalog/category/autocomplete&user_token={{ user_token }}&filter_name=' +  encodeURIComponent(request),
+                dataType: 'json',
+                success: function(json) {
+                    response($.map(json, function(item) {
+                        return {
+                            label: item['name'],
+                            value: item['category_id']
+                        }
+                    }));
+                }
+            });
+        },
+        'select': function(item) {
+            $('input[name=\'category\']').val('');
+
+            $('#product-category' + item['value']).remove();
+
+            $('#product-category').append('<div id="product-category' + item['value'] + '"><i class="fa fa-minus-circle"></i> ' + item['label'] + '<input type="hidden" name="product_category[]" value="' + item['value'] + '" /></div>');
+        }
+    });
+
+    $('#product-category').delegate('.fa-minus-circle', 'click', function() {
+        $(this).parent().remove();
+    });
+</script>
+
+<script type="text/javascript"><!--
+    // Shopee Category
+    $('input[name=\'shopee_category\']').autocomplete({
+        'source': function(request, response) {
+            $.ajax({
+                url: 'index.php?route=extension/module/cedshopee/category/autocomplete&user_token={{ user_token }}&filter_name=' +  encodeURIComponent(request),
+                dataType: 'json',
+                success: function(json) {
+                    response($.map(json, function(item) {
+                        // console.log(item);
+                        return {
+                            label: item['name'],
+                            value: item['category_id']
+                        }
+                    }));
+                }
+            });
+        },
+        'select': function(item) {
+            $('input[name=\'shopee_category\']').val(item['label']);
+            $('input[name=\'shopee_category_id\']').val(item['value']);
+            fetchShopeeAttributes(item['value']);
+        }
+    });
+
+    //-->
+</script> 
+
+<script type="text/javascript">
+    var profile_id = '{{ profile_id }}';
+    // $('#tabs a').tabs();
+    // $.widget('custom.catcomplete', $.ui.autocomplete, {
+    //     _renderMenu: function (ul, items) {
+    //         var self = this, currentCategory = '';
+
+    //         $.each(items, function (index, item) {
+    //             if (item.category != currentCategory) {
+    //                 ul.append('<li class="ui-autocomplete-category">' + item.category + '</li>');
+
+    //                 currentCategory = item.category;
+    //             }
+
+    //             self._renderItem(ul, item);
+    //         });
+    //     }
+    // });
+
+    // $('input[name=\'shopee_category\']').autocomplete({
+    //     delay: 500,
+    //     source: function(request, response) {
+    //         $.ajax({
+    //             url: 'index.php?route=extension/module/cedshopee/category/autocomplete&user_token={{ user_token }}&filter_name=' +  encodeURIComponent(request.term),
+    //             dataType: 'json',
+    //             success: function(json) {
+    //                 response($.map(json, function(item) {
+    //                     return {
+    //                         label: item.name,
+    //                         value: item.category_id
+    //                     }
+    //                 }));
+    //             }
+    //         });
+    //     },
+    //     select: function(event, ui) {
+    //         $('input[name=\'shopee_category\']').attr('value', ui.item.label);
+    //         $('input[name=\'shopee_category_id\']').attr('value', ui.item.value);
+    //         fetchShopeeAttributes(ui.item.value);
+    //         return false;
+    //     },
+    //     focus: function(event, ui) {
+    //         return false;
+    //     }
+    // });
+    function fetchShopeeAttributes(category_id) {
+        $.ajax({
+            url: 'index.php?route=extension/module/cedshopee/category/attributesByCategory&user_token={{ user_token }}&category_id='+category_id+'&profile_id='+profile_id,
+            cache: false,
+            beforeSend: function() {
+                $('#cancel-plan, #revise-plan').attr('disabled', true);
+                $('#cancel-plan').after('<span class="laybuy-loading fa fa-spinner" style="margin-left:2px"></span>');
+            },
+            complete: function() {
+                $('#cancel-plan, #revise-plan').attr('disabled', false);
+                $('.laybuy-loading').remove();
+            },
+            success: function(json) {
+                console.log(json);
+                document.getElementById('mapping_values').innerHTML=json;
+            },
+            error: function(xhr, ajaxOptions, thrownError) {
+                alert(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+            }
+        });
+    }
+    function toggleOptions(panel_id) {
+        var panel = document.getElementById('panel'+panel_id);
+        var store_attribute_id = $('select[name="profile_attribute_mapping['+panel_id+'][store_attribute]"]').val();
+        var shopee_attribute_id = $('select[name="profile_attribute_mapping['+panel_id+'][shopee_attribute]"]').val();
+
+        var show_option_mapping = $('select[name="profile_attribute_mapping['+panel_id+'][store_attribute]"]').find('option:selected');
+        if(show_option_mapping)
+            show_option_mapping = show_option_mapping.attr("show_option_mapping");
+
+        if(store_attribute_id && shopee_attribute_id && parseInt(show_option_mapping)){
+            if ($(panel).css('display') == 'none') {
+                $(panel).show();
+            } else {
+                $(panel).hide();
+            }
+        } else {
+            if(!store_attribute_id)
+                alert("Please Select Attribute First");
+            if(!shopee_attribute_id)
+                alert("Please Select Shopee Attribute First");
+            if(show_option_mapping){
+                alert("Option Mapping not needed.");
+            }
+        }
+    }
+
+    function getStoreOptions(data) {
+        if (data.value.length > 0) {
+            var id = data.getAttribute('data-id');
+
+            $('input[name="profile_attribute_mapping['+id+'][option][store_attribute]"]').autocomplete({
+                delay: 500,
+                source: function (request, response) {
+                    var name = encodeURIComponent(request);
+                    var manufacturer_id = $('select[name="profile_attribute_mapping['+id+'][store_attribute]"]').val();
+                    $.ajax({
+                        url: 'index.php?route=extension/module/cedshopee/category/getStoreOptions&user_token={{ user_token }}&filter_name=' + name + '&catId='+$('[name="shopee_category_id"]').val()+'&attribute_id='+manufacturer_id ,
+                        dataType: 'json',
+                        success: function (json) {
+                            response($.map(json, function (item) {
+                                if(manufacturer_id=='product-manufacturer_id'){
+                                    return {
+                                        label: item.name,
+                                        value: item.manufacturer_id
+                                    }
+                                } else {
+                                    return {
+                                        label: item.name,
+                                        value: item.option_value_id
+                                    }
+                                }
+
+                            }));
+                        }
+                    });
+                },
+                select: function (item) {
+                    $('input[name="profile_attribute_mapping['+id+'][option][store_attribute]"]').val(item['label']);
+                    $('input[name="profile_attribute_mapping['+id+'][option][store_attribute_id]"]').val(item['value']);
+                }
+            });
+        }
+    }
+
+    function getBrand(data)
+    {
+        if (data.value.length > 0) {
+            var id = data.getAttribute('data-id');
+            $('input[name="profile_attribute_mapping['+id+'][default_values]"]').autocomplete({
+                delay: 500,
+                source: function (request, response) {
+                    var name = encodeURIComponent(request);
+                    $.ajax({
+                        url: 'index.php?route=extension/module/cedshopee/category/brandAuto&user_token={{ user_token }}&filter_name=' + name + '&catId='+$('[name="shopee_category_id"]').val()+'&attribute_id='+id ,
+                        dataType: 'json',
+                        success: function (json) {
+                            response($.map(json, function (item) {
+                                return {
+                                    label: item,
+                                    value: item
+                                }
+                            }));
+                        }
+                    });
+                },
+                select: function (item) {
+                    $('input[name="profile_attribute_mapping['+id+'][default_values]"]').val(item['label']);
+                    $('input[name="profile_attribute_mapping['+id+'][default_value_id]"]').val(item['label']);
+                }
+            });
+        }
+    }
+    function getOptions(data)
+    {
+        if (data.value.length > 0) {
+            var id = data.getAttribute('data-id');
+
+            $('input[name="profile_attribute_mapping['+id+'][option][shopee_attribute]"]').autocomplete({
+                delay: 500,
+                source: function (request, response) {
+                    var name = encodeURIComponent(request);
+                    $.ajax({
+                        url: 'index.php?route=extension/module/cedshopee/category/brandAuto&user_token={{ user_token }}&filter_name=' + name + '&catId='+$('[name="shopee_category_id"]').val()+'&attribute_id='+id ,
+                        dataType: 'json',
+                        success: function (json) {
+                            response($.map(json, function (item) {
+                                return {
+                                    label: item,
+                                    value: item
+                                }
+                            }));
+                        }
+                    });
+                },
+                select: function (item) {
+                    $('input[name="profile_attribute_mapping['+id+'][option][shopee_attribute]"]').val(item['label']);
+                }
+            });
+        }
+    }
+
+    function addAttribute(c_object,attribute_id) 
+    {
+        //alert(attribute_id);
+        var attribute_row = $("#option_mapping"+attribute_id+" tr").length-1;
+        var store_attribute = $('input[name="profile_attribute_mapping['+attribute_id+'][option][store_attribute]"]').val();
+        var shopee_attribute = $('input[name="profile_attribute_mapping['+attribute_id+'][option][shopee_attribute]"]').val();
+        var store_attribute_id = $('input[name="profile_attribute_mapping['+attribute_id+'][option][store_attribute_id]"]').val();
+
+        html = '<tbody><tr id="attribute-row' + attribute_row +'">';
+        html += '<td><input type="text" name="profile_attribute_mapping['+attribute_id+'][option]['+attribute_row+'][store_attribute]" value="'+store_attribute+'" class="form-control" /><input type="hidden" name="profile_attribute_mapping['+attribute_id+'][option]['+attribute_row+'][store_attribute_id]" value="'+store_attribute_id+'" class="form-control" /></td>';
+        html += '<td><input type="text" name="profile_attribute_mapping['+attribute_id+'][option]['+attribute_row+'][shopee_attribute]" value="'+shopee_attribute+'" class="form-control" /></td>';
+        html += '<td><a onclick="$(\'#attribute-row' + attribute_row + '\').remove();" class="btn btn-danger" value="Remove"><i class="fa fa-trash"></i></a></td>';
+        html += '</tr></tbody>';         
+        $(c_object).parent().parent().parent().parent().children('thead').after(html)
+        attribute_row++;
+        $('input[name="profile_attribute_mapping['+attribute_id+'][option][store_attribute]"]').val("");
+        $('input[name="profile_attribute_mapping['+attribute_id+'][option][shopee_attribute]"]').val("");
+        $('input[name="profile_attribute_mapping['+attribute_id+'][option][store_attribute_id]"]').val("");
+    }
+
+    // function addAttribute(c_object,attribute_id) {
+    //     var attribute_row = $("#option_mapping"+attribute_id+" tr").length-1;
+    //     var store_attribute = $('input[name="profile_attribute_mapping['+attribute_id+'][option][store_attribute]"]').val();
+    //     var shopee_attribute = $('input[name="profile_attribute_mapping['+attribute_id+'][option][shopee_attribute]"]').val();
+    //     var store_attribute_id = $('input[name="profile_attribute_mapping['+attribute_id+'][option][store_attribute_id]"]').val();
+    //     html = '<div id="attribute-row' + attribute_row +'">';
+    //     html += '<div class="col-sm-12"><input type="text" name="profile_attribute_mapping['+attribute_id+'][option]['+attribute_row+'][store_attribute]" value="'+store_attribute+'" class="option_input" /><input type="hidden" name="profile_attribute_mapping['+attribute_id+'][option]['+attribute_row+'][store_attribute_id]" value="'+store_attribute_id+'" />';
+    //     html += '<input type="text" name="profile_attribute_mapping['+attribute_id+'][option]['+attribute_row+'][shopee_attribute]" value="'+shopee_attribute+'" class="option_input" />';
+    //     html += '<a onclick="$(\'#attribute-row' + attribute_row + '\').remove();" class="btn btn-danger"><i class="fa fa-trash" aria-hidden="true"></i></a></div>';
+    //     html += '</div>';
+    //     $(c_object).parent().parent().parent().parent().children('div').after(html)
+    //     attribute_row++;
+    //     $('input[name="profile_attribute_mapping['+attribute_id+'][option][store_attribute]"]').val("");
+    //     $('input[name="profile_attribute_mapping['+attribute_id+'][option][shopee_attribute]"]').val("");
+    //     $('input[name="profile_attribute_mapping['+attribute_id+'][option][store_attribute_id]"]').val("");
+    // }
+
+    // function addOptionValues(option_object) {
+    //     if(option_object && option_object.value) {
+    //         var curr_option_id = option_object.value;
+    //         $(option_object).parent('div.form-group').children('div.col-sm-6').children('select.form-control').empty();
+    //         $(option_object).parent('div.form-group').children('div.col-sm-6').children('select.form-control').append('<option value="">Please select Option </option>');
+    //         var store_options_json = $("#store_options_json");
+    //         if (store_options_json && store_options_json.val()) {
+    //             var result = store_options_json.val();
+    //             var result = $.parseJSON(result);
+    //             $.each(result, function (option_id, options) {
+    //                 if(curr_option_id==option_id){
+
+    //                     $.each(options, function ( key, option_details) {
+    //                         $(option_object).parent('div.form-group').children('div.col-sm-6').children('select.form-control').append('<option value=' + option_details.option_value_id + '>' + option_details.name + '</option>');
+    //                     });
+    //                 }
+
+    //             });
+    //         }
+    //     }
+    // }
+    window.onload = function () {
+        if($('[name="shopee_category_id"]') && $('[name="shopee_category_id"]').val()){
+            var category_id = $('[name="shopee_category_id"]').val();
+            fetchShopeeAttributes(category_id);
+        }
+    }
+    </script>
+<style>
+    .form-control {
+        margin-bottom: 15px;
+    }
+
+    .form-group + .form-group {
+      border-top: none;
+    }
+    
+</style>
+{{ footer }} 

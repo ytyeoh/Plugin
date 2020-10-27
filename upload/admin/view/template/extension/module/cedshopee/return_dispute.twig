@@ -1,0 +1,107 @@
+<!--
+/**
+* CedCommerce
+*
+* NOTICE OF LICENSE
+*
+* This source file is subject to the End User License Agreement (EULA)
+* that is bundled with this package in the file LICENSE.txt.
+* It is also available through the world-wide-web at this URL:
+* http://cedcommerce.com/license-agreement.txt
+*
+* @category  modules
+* @package   cedshopee
+* @author    CedCommerce Core Team 
+* @copyright Copyright CEDCOMMERCE (http://cedcommerce.com/)
+* @license   http://cedcommerce.com/license-agreement.txt
+*/
+-->
+{{ header }}{{ column_left }} 
+<div id="content">
+  <div class="page-header">
+    <div class="container-fluid">
+      <div class="pull-right">
+          <a onclick="document.getElementById('shipment-form').submit();" data-toggle="tooltip" class="btn btn-primary" title="{{ button_dispute }}">{{ button_dispute }}</a>
+          <a href="{{ cancel }}" data-toggle="tooltip" class="btn btn-default" title="{{ button_cancel }}">{{ button_cancel }}</a>
+      </div>
+      <h1>{{ heading_title }}</h1>
+      <ul class="breadcrumb">
+        {% for breadcrumb in breadcrumbs %} 
+        <li><a href="{{ breadcrumb['href'] }}">{{ breadcrumb['text'] }}</a></li>
+        {% endfor %} 
+      </ul>
+    </div>
+  </div>
+    
+    <div class="container-fluid">
+      {% if (error_warning) %} 
+        <div class="alert alert-danger"><i class="fa fa-exclamation-circle"></i> {% if error_warning %} {% for key,value in error_warning %} {{ value }} {% endfor %} {% else %} {{ error_warning }} {% endif %} 
+          <button type="button" class="close" data-dismiss="alert">&times;</button>
+        </div>
+        {% endif %} 
+        {% if (success) %} 
+        <div class="alert alert-success"><i class="fa fa-check-circle"></i> {{ success }} 
+          <button type="button" class="close" data-dismiss="alert">&times;</button>
+        </div>
+        {% endif %} 
+
+        <div class="panel panel-default">
+          <div class="panel-heading">
+           <h3 class="panel-title"><i class="fa fa-list"></i> {{ text_list }}</h3>
+          </div>
+            <div class="panel-body">
+                <form action="{{ dispute }}" class="form-horizontal" id="shipment-form" method="POST">
+                    <div class="tab-content">
+                      <div class="table-responsive">
+                        <table class="table table-bordered table-hover">
+                            <tr>
+                                <td>{{ text_retrunsn }}</td>
+                                <td><input type="text" readonly name="returnsn" value="{{ returnsn }}">
+                                    {% if (error_returnsn) %} 
+                                    <span class="error">{{ error_returnsn }}</span>
+                                    {% endif %} 
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>{{ text_email }}</td>
+                                <td><input type="text" name="email" value="{{ email }}">
+                                    {% if (error_email) %} 
+                                    <span class="error">{{ error_email }}</span>
+                                    {% endif %} 
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>{{ text_dispute_reason }}</td>
+                                <td>
+                                    <select id="dispute_reason" name="dispute_reason">
+                                        {% if (count(dispute_reasons)) %} 
+                                        {% for dispute_reason in dispute_reasons %} 
+                                        {% if (dispute_reason == dispute_reason_selected) %} 
+                                        <option selected="selected"
+                                                value="{{ dispute_reason }}">{{ dispute_reason }}</option>
+                                        {% else %} 
+                                        <option value="{{ dispute_reason }}">{{ dispute_reason }}</option>
+                                        {% endif %} 
+                                        {% endfor %} 
+                                        {% endif %} 
+                                    </select>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>{{ text_dispute_text_reason }}</td>
+                                <td><textarea name="dispute_text_reason">{{ dispute_text_reason }}</textarea>
+                                    {% if (error_dispute_text_reason) %} 
+                                    <span class="error">{{ error_dispute_text_reason }}</span>
+                                    {% endif %} 
+                                </td>
+
+                            </tr>
+                        </table>
+                      </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{{ footer }}

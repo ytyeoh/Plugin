@@ -1,0 +1,567 @@
+<!--
+/**
+* CedCommerce
+*
+* NOTICE OF LICENSE
+*
+* This source file is subject to the End User License Agreement (EULA)
+* that is bundled with this package in the file LICENSE.txt.
+* It is also available through the world-wide-web at this URL:
+* http://cedcommerce.com/license-agreement.txt
+*
+* @category  modules
+* @package   cedshopee
+* @author    CedCommerce Core Team 
+* @copyright Copyright CEDCOMMERCE (http://cedcommerce.com/)
+* @license   http://cedcommerce.com/license-agreement.txt
+*/
+-->
+{{ header }}{{ column_left }} 
+<div id="content">
+    <div class="page-header">
+        <div class="container-fluid">
+            <div class="pull-right">
+                <a href="{{ all_url }}" data-toggle="tooltip" title="{{ 'Upload All' }}"  class="btn btn-primary">{{ button_all }}</a>
+                <a onclick="massupload();" data-toggle="tooltip" title="{{ button_insert }}" class="btn btn-info">{{ button_insert }}</a>
+                <a onclick="$('#form').attr('action', '{{ stock_update }}'); $('#form').submit();" data-toggle="tooltip" title="{{ button_stock_update }}" class="button btn btn-success">{{ button_stock_update }}</a>
+                <a onclick="$('#form').attr('action', '{{ price_update }}'); $('#form').submit();" data-toggle="tooltip" title="{{ button_price_update }}" class="button btn btn-info">{{ button_price_update }}</a>
+                <a data-toggle="tooltip" title="{{ button_delete }}" onclick="$('#form').submit();" class="button btn btn-danger">{{ button_delete }}</a>
+            </div>
+            <h1>{{ heading_title }}</h1>
+            <ul class="breadcrumb">
+                {% for breadcrumb in breadcrumbs %} 
+                <li><a href="{{ breadcrumb['href'] }}">{{ breadcrumb['text'] }}</a></li>
+                {% endfor %} 
+            </ul>
+        </div>
+    </div>
+    <div class="container-fluid" id="response">
+        {% if (error_warning) %} 
+        <div class="alert alert-danger"><i class="fa fa-exclamation-circle"></i> {{ error_warning }}
+            <button type="button" class="close" data-dismiss="alert">&times;</button>
+        </div>
+        {% endif %} 
+        {% if (success) %} 
+        <div class="alert alert-success"><i class="fa fa-check-circle"></i> {{ success }} 
+            <button type="button" class="close" data-dismiss="alert">&times;</button>
+        </div>
+        {% endif %} 
+
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title"><i class="fa fa-list"></i> {{ text_list }}</h3>
+            </div>
+            <div class="panel-body">
+                <div class="well">
+                    <div class="row">
+                        <div class="col-sm-4">
+                            <div class="form-group">
+                                <label class="control-label" for="input-name">{{ column_name }}</label>
+                                <input type="text" name="filter_name" value="{{ filter_name }}" placeholder="{{ column_name }}" id="input-name" class="form-control" />
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label" for="input-model">{{ column_model }}</label>
+                                <input type="text" name="filter_model" value="{{ filter_model }}" placeholder="{{ column_model }}" id="input-model" class="form-control" />
+                            </div>
+                        </div>
+                        <div class="col-sm-4">
+                            <div class="form-group">
+                                <label class="control-label" for="input-price">{{ column_price }}</label>
+                                <input type="text" name="filter_price" value="{{ filter_price }}" placeholder="{{ column_price }}" id="input-price" class="form-control" />
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label" for="input-quantity">{{ column_quantity }}</label>
+                                <input type="text" name="filter_quantity" value="{{ filter_quantity }}" placeholder="{{ column_quantity }}" id="input-quantity" class="form-control" />
+                            </div>
+                        </div>
+                        <div class="col-sm-4">
+                            <div class="form-group">
+                                <label class="control-label" for="input-status">{{ column_status }}</label>
+                                <select name="filter_status" id="input-status" class="form-control">
+                                    <option value=""></option>
+                                    {% if (filter_status) %} 
+                                    <option value="1" selected="selected">{{ text_enabled }}</option>
+                                    {% else %} 
+                                    <option value="1">{{ text_enabled }}</option>
+                                    {% endif %} 
+                                    {% if ((filter_status != constant('null')) and not filter_status) %} 
+                                    <option value="0" selected="selected">{{ text_disabled }}</option>
+                                    {% else %} 
+                                    <option value="0">{{ text_disabled }}</option>
+                                    {% endif %} 
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label" for="input-status">{{ column_profile_name }}</label>
+                                <select name="filter_profile_name" id="input-profile_name" class="form-control">
+                                    <option value=""></option>
+                                    {% for profile in profiles %}
+                                    {% if (profile_filter is not empty and profile_filter == profile['id']) %}
+                                    <option selected="selected" value="{{ profile['id'] }}"> {{ profile['title'] }}</option>
+                                    {% else %} 
+                                    <option value="{{ profile['id'] }}">{{ profile['title'] }}</option>
+                                    {% endif %}
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-sm-4">
+                            <div class="form-group">
+                                <label class="control-label" for="input-status">{{ column_wstatus }}</label>
+                                <select name="filter_shopee_status" id="input-fruugo_status" class="form-control">
+                                    <option value=""></option>
+                                    {% if cedshopee_status %} {% for cedshopee_stat in cedshopee_status %} 
+                                    <option {% if (filter_shopee_status == cedshopee_stat['value']) %} {{ 'selected="selected"' }}{% endif %} value="{{ cedshopee_stat['value'] }}">{{ cedshopee_stat['label']}}</option>
+                                    {% endfor %} 
+                                    {% endif %} 
+                                </select>
+                            </div>
+                            <div class="form-group" style="float: right; margin: -4.2em -8em 0 0;">
+                                <a onclick="filter();" class="btn btn-primary "><i class="fa fa-search"></i>{{ button_filter }}</a>
+                            </div>
+                            <!-- <button type="button" id="button-filter" class="btn btn-primary pull-right"><i class="fa fa-search"></i> {{ button_filter }}</button> -->
+
+                        </div>
+                    </div>
+                </div>
+                <!-- The Modal -->
+                <div id="myModal" class="modal">
+                    <!-- Modal content -->
+                    <div class="modal-content">
+                        <span class="close">&times;</span>
+                        <div id="popup_content"> Loading.......</div>
+                    </div>
+                </div>
+                <form action="{{ delete }}" method="post" enctype="multipart/form-data" id="form">
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-hover">
+                            <thead>
+                            <tr>
+                                <td width="1" style="text-align: center;"><input type="checkbox" onclick="$('input[name*=\'selected\']').attr('checked', this.checked);"/>
+                                </td>
+                                <td class="center">{{ column_image }}</td>
+                                <td class="left">{% if (sort == 'pd.name') %} 
+                                    <a href="{{ sort_name }}"
+                                       class="{{ order }}">{{ column_name }}</a>
+                                    {% else %} 
+                                    <a href="{{ sort_name }}">{{ column_name }}</a>
+                                    {% endif %}</td>
+                                <td class="left">{% if (sort == 'p.model') %} 
+                                    <a href="{{ sort_model }}"
+                                       class="{{ order }}">{{ column_model }}</a>
+                                    {% else %} 
+                                    <a href="{{ sort_model }}">{{ column_model }}</a>
+                                    {% endif %}</td>
+                                <td class="left">{% if (sort == 'p.price') %} 
+                                    <a href="{{ sort_price }}"
+                                       class="{{ order }}">{{ column_price }}</a>
+                                    {% else %} 
+                                    <a href="{{ sort_price }}">{{ column_price }}</a>
+                                    {% endif %}</td>
+                                <td class="right">{% if (sort == 'p.quantity') %} 
+                                    <a href="{{ sort_quantity }}"
+                                       class="{{ order }}">{{ column_quantity }}</a>
+                                    {% else %} 
+                                    <a href="{{ sort_quantity }}">{{ column_quantity }}</a>
+                                    {% endif %}</td>
+
+                                <td class="right">
+                                    {{ column_profile_name }}
+                                </td>
+                                
+                                <td class="right">
+                                	Shopee ID
+                                </td>
+
+                                <td class="left">{% if (sort == 'p.status') %} 
+                                    <a href="{{ sort_status }}"
+                                       class="{{ order }}">{{ column_status }}</a>
+                                    {% else %} 
+                                    <a href="{{ sort_status }}">{{ column_status }}</a>
+                                    {% endif %}</td>
+                                <td class="left">{% if (sort == 'p.cedshopee_status') %} 
+                                    <a href="{{ sort_wstatus }}"
+                                       class="{{ order }}">{{ column_wstatus }}</a>
+                                    {% else %} 
+                                    <a href="{{ sort_wstatus }}">{{ column_wstatus }}</a>
+                                    {% endif %}</td>
+                                <td class="right">{{ column_action }}</td>
+                            </tr>
+                            </thead>
+                            <tbody>
+
+                            {% if (products) %} 
+                            {% for product in products %} 
+                            <tr>
+                                <td style="text-align: center;">{% if (product['selected']) %} 
+                                    <input type="checkbox" name="selected[]" value="{{ product['product_id'] }}"
+                                           checked="checked"/>
+                                    {% else %} 
+                                    <input type="checkbox" name="selected[]" value="{{ product['product_id'] }}"/>
+                                    {% endif %}</td>
+                                <td class="center"><img src="{{ product['image'] }}" alt="{{ product['name'] }}" style="padding: 1px; border: 1px solid #DDDDDD;"/></td>
+                                <td class="left">{{ product['name'] }}</td>
+                                <td class="left">{{ product['model'] }}</td>
+                                <td class="left">{% if (product['special']) %} 
+                                    <span style="text-decoration: line-through;">{{ product['price'] }}</span><br/>
+                                    <span style="color: #b00;">{{ product['special'] }}</span>
+                                    {% else %} 
+                                    {{ product['price'] }} 
+                                    {% endif %}</td>
+                                <td class="right">{% if (product['quantity'] <= 0) %} 
+                                    <span style="color: #FF0000;">{{ product['quantity'] }}</span>
+                                    {% elseif (product['quantity'] <= 5) %} 
+                                    <span style="color: #FFA500;">{{ product['quantity'] }}</span>
+                                    {% else %} 
+                                    <span style="color: #008000;">{{ product['quantity'] }}</span>
+                                    {% endif %}</td>
+
+                                <td class="right">
+                                    {{ product['profile_name'] }}
+                                </td>
+                                <td class="right">
+                                	<input type="text" name="sp_id[{{ product['product_id'] }}]" value="{{ product['shopee_id'] }}">
+                                </td>
+
+                                <td class="left">{{ product['status'] }}</td>
+                                <td class="left">
+                                	<select name="cedshopee_status[{{ product['product_id'] }}]">
+                                		<option {% if product['cedshopee_status'] == 'NORMAL' %} selected="selected" {% endif %} value="NORMAL">NORMAL</option>
+                                		<option {% if product['cedshopee_status'] == 'DELETED' %} selected="selected" {% endif %} value="DELETED">DELETED</option>
+                                		<option {% if product['cedshopee_status'] == 'BANNED' %} selected="selected" {% endif %} value="BANNED">BANNED</option>
+                                		<option {% if product['cedshopee_status'] == 'Not Uploaded' %} selected="selected" {% endif %} value="Not Uploaded">Not Uploaded</option>
+                                	</select>
+                                </td>
+                                <td class="right">{% for action in product['action'] %} 
+                                    {% if (action['text'] == view) %} 
+                                    <a onclick="viewDetails('{{ product['product_id'] }}')" data-toggle="tooltip" title="View" class="btn btn-info"><i class="fa fa-eye"></i></a>
+                                    {% else %} 
+                                    <a href="{{ action['href'] }}" data-toggle="tooltip" title="Edit" class="btn btn-primary"><i class="fa fa-pencil"></i></a>
+                                    {% endif %} 
+
+                                    {% endfor %} 
+                                </td>
+                            </tr>
+                            {% endfor %} 
+                            {% else %} 
+                            <tr>
+                                <td class="center" colspan="9">{{ text_no_results }}</td>
+                            </tr>
+                            {% endif %} 
+                            </tbody>
+                        </table>
+                    </div>
+                </form>
+                <div class="row">
+                    <div class="col-sm-6 text-left">{{ pagination }}</div>
+                    <div class="col-sm-6 text-right">{{ results }}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript"><!--
+    function filter() {
+        url = 'index.php?route=extension/module/cedshopee/product&user_token={{ user_token }}';
+
+        var filter_name = $('input[name=\'filter_name\']').val();
+
+        if (filter_name) {
+            url += '&filter_name=' + encodeURIComponent(filter_name);
+        }
+
+        var filter_model = $('input[name=\'filter_model\']').val();
+
+        if (filter_model) {
+            url += '&filter_model=' + encodeURIComponent(filter_model);
+        }
+
+        var profile_name = $('select[name="filter_profile_name"]').val();
+
+        if (profile_name) {
+            url += '&profile_name='+encodeURIComponent(profile_name);
+        }
+
+        var filter_price = $('input[name=\'filter_price\']').val();
+
+        if (filter_price) {
+            url += '&filter_price=' + encodeURIComponent(filter_price);
+        }
+
+        var filter_quantity = $('input[name=\'filter_quantity\']').val();
+
+        if (filter_quantity) {
+            url += '&filter_quantity=' + encodeURIComponent(filter_quantity);
+        }
+
+        var filter_status = $('select[name=\'filter_status\']').val();
+
+        if (filter_status != '') {
+            url += '&filter_status=' + encodeURIComponent(filter_status);
+        }
+
+        var filter_shopee_status = $('select[name=\'filter_shopee_status\']').val();
+
+        if (filter_shopee_status != '') {
+            url += '&filter_shopee_status=' + encodeURIComponent(filter_shopee_status);
+        }
+
+        location = url;
+    }
+    //--></script>
+<script type="text/javascript"><!--
+    $('#form input').keydown(function (e) {
+        if (e.keyCode == 13) {
+            filter();
+        }
+    });
+    //--></script>
+<script type="text/javascript"><!--
+    $('input[name=\'filter_name\']').autocomplete({
+        delay: 500,
+        source: function (request, response) {
+            $.ajax({
+                url: 'index.php?route=catalog/product/autocomplete&user_token={{ user_token }}&filter_name=' + encodeURIComponent(request),
+                dataType: 'json',
+                success: function (json) {
+                    response($.map(json, function (item) {
+                        return {
+                            label: item['name'],
+                            value: item['product_id']
+                        }
+                    }));
+                }
+            });
+        },
+        'select': function (item) {
+            $('input[name=\'filter_name\']').val(item['label']);
+        }
+    });
+
+    $('input[name=\'filter_model\']').autocomplete({
+        delay: 500,
+        source: function (request, response) {
+            $.ajax({
+                url: 'index.php?route=catalog/product/autocomplete&user_token={{ user_token }}&filter_model=' + encodeURIComponent(request.term),
+                dataType: 'json',
+                success: function (json) {
+                    response($.map(json, function (item) {
+                        return {
+                            label: item['model'],
+                            value: item['product_id']
+                        }
+                    }));
+                }
+            });
+        },
+        'select': function(item) {
+          $('input[name=\'filter_model\']').val(item['label']);
+        }
+    });
+
+
+    function massupload() {
+        var url = 'index.php?route=extension/module/cedshopee/product/massupload&user_token={{ user_token }}';
+        var productids_array = [];
+        var chunklimit = 1;
+        var chunk_array = [];
+        $('input[name=\'selected[]\']:checked').each(function () {
+            productids_array.push($(this).val());
+        });
+        if (productids_array.length == 0) {
+            alert('Please select Product');
+            return false;
+        }
+        while (productids_array.length) {
+            chunk_array.push(productids_array.splice(0, chunklimit));
+        }
+        chunk_array.reverse();
+        modal.style.display = "block";
+        sendUploadRequest(chunk_array, url);
+    }
+    function sendUploadRequest(chunk_array, url) {
+
+        var len = chunk_array.length - 1;
+        $('#selected' + chunk_array[len]).html('');
+        $.ajax({
+            type: "POST",
+            url: url,
+            data: {'selected': chunk_array[len]},
+            success: function (response) {
+                console.log(response); 
+                if (response) {
+                    var obj = response;
+                    if (obj.success) {
+                        console.log(obj.message);
+                        var html = '<div class="alert alert-success">' + obj.message + '</div>';
+                        $('#response').prepend(html);
+                        if (len != 0) {
+                            chunk_array.splice(len, 1);
+                            sendUploadRequest(chunk_array, url);
+                        }
+                    } else {
+                        console.log(obj.message);
+                        var errormessage = obj.message;
+                        if (errormessage) {
+                            if (errormessage instanceof Array) {
+                                $.each(errormessage, function (key, value) {
+                                    var html = '<div class="alert alert-danger">' + value + '</div>';
+                                    $('#response').prepend(html);
+                                });
+                            } else {
+                                var html = '<div class="alert alert-danger">' + errormessage + '</div>';
+                                $('#response').prepend(html);
+                            }
+
+
+                            if (len != 0) {
+                                chunk_array.splice(len, 1);
+                                sendUploadRequest(chunk_array, url);
+                            }
+                        }
+                    }
+                    if (len == 0) {
+                        modal.style.display = "none";
+                    }
+                }
+            }
+            ,
+            statusCode: {
+                500: function (xhr) {
+                    if (window.console) console.log(xhr.responseText);
+                },
+                400: function (response) {
+                    alert('<span style="color:Red;">Error While Uploading Please Check</span>');
+                },
+                404: function (response) {
+
+                    alert('<span style="color:Red;">Error While Uploading Please Check</span>');
+                }
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                if (window.console) console.log(xhr.responseText);
+                alert(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+
+            },
+        });
+    }
+
+    function viewDetails(product_id) {
+
+        modal.style.display = "block";
+        var url = 'index.php?route=extension/module/cedshopee/product/viewDetails&user_token={{ user_token }}';
+        $.ajax({
+            type: "POST",
+            url: url,
+            data: {'product_id': product_id},
+            success: function (response) {
+                if (response) {
+                    if (response.success) {
+                        if (response.message) {
+                            var html = '';
+                            var response = response.message;
+                            $.each(response, function (key, value) {
+                                if (typeof value == 'object') {
+                                    var inner_html = '';
+                                    $.each(value, function (k, v) {
+                                        if (typeof v == 'object') {
+                                            var inner_html1 = '';
+                                            $.each(v, function (index, vval) {
+                                                inner_html1 += '<p class="text-left" >' + index + ' : ' + vval + '</p>';
+                                            });
+                                            html += '<tr><td class="text-left" >' + key + '</td><td class="text-left" >' + inner_html1 + '</td><tr>';
+                                        } else {
+                                            inner_html += '<p class="text-left" >' + k + ' : ' + v + '</p>';
+                                        }
+
+                                    });
+                                    html += '<tr><td class="text-left" >' + key + '</td><td class="text-left" >' + inner_html + '</td><tr>';
+                                } else {
+                                    html += '<tr><td class="text-left" >' + key + '</td><td class="text-left" >' + value + '</td><tr>';
+                                }
+                            });
+                            $("#popup_content").html('<h2> Response : </h2><table class="table table-hover table-bordered">' + html + '</table>');
+
+                        }
+                    } else {
+                        var html = '';
+                        var response = response.message;
+                        if (typeof response == 'object') {
+                            $.each(response[0], function (key, value) {
+                                html += '<tr><td class="text-left" >' + key + '</td><td class="text-left" >' + value + '</td><tr>';
+                            });
+                            $("#popup_content").html('<h2> Error : </h2><table class="table table-hover table-bordered">' + html + '</table>');
+                        } else {
+                            html += '<tr><td class="text-left" >Message</td><td class="text-left" >' + response + '</td><tr>';
+                            $("#popup_content").html('<h2> Error : </h2><table class="table table-hover table-bordered">' + html + '</table>');
+                        }
+                    }
+                }
+            }
+            ,
+            statusCode: {
+                500: function (xhr) {
+                    if (window.console) console.log(xhr.responseText);
+                },
+                400: function (response) {
+                    alert('<span style="color:Red;">Error While Uploading Please Check</span>');
+                },
+                404: function (response) {
+
+                    alert('<span style="color:Red;">Error While Uploading Please Check</span>');
+                }
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                if (window.console) console.log(xhr.responseText);
+                alert(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+
+            },
+        });
+    }
+    //--></script>
+<style type="text/css">
+    /* The Modal (background) */
+    .modal {
+        display: none; /* Hidden by default */
+        position: fixed; /* Stay in place */
+        z-index: 999; /* Sit on top */
+        left: 0;
+        top: 0;
+        width: 100%; /* Full width */
+        height: 100%; /* Full height */
+        overflow: auto; /* Enable scroll if needed */
+        background-color: rgb(0, 0, 0); /* Fallback color */
+        background-color: rgba(0, 0, 0, 0.4); /* Black w/ opacity */
+    }
+
+    .modal-content {
+        background-color: #fefefe;
+        margin: 5em 0 0 19em;
+        padding: 20px;
+        border: 1px solid #888;
+        width: 80%;
+    }
+
+    .close {
+        color: #aaa;
+        float: right;
+        font-size: 28px;
+        font-weight: bold;
+    }
+
+    .close:hover,
+    .close:focus {
+        color: black;
+        text-decoration: none;
+        cursor: pointer;
+    }
+</style>
+<script type="text/javascript">
+    var modal = document.getElementById('myModal');
+    var span = document.getElementsByClassName("close")[0];
+    span.onclick = function () {
+        modal.style.display = "none";
+        $("#popup_content").html('Loading........');
+    }
+</script>
+{{ footer }}

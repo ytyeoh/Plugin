@@ -1,0 +1,195 @@
+<!--
+/**
+* CedCommerce
+*
+* NOTICE OF LICENSE
+*
+* This source file is subject to the End User License Agreement (EULA)
+* that is bundled with this package in the file LICENSE.txt.
+* It is also available through the world-wide-web at this URL:
+* http://cedcommerce.com/license-agreement.txt
+*
+* @category  modules
+* @package   cedshopee
+* @author    CedCommerce Core Team 
+* @copyright Copyright CEDCOMMERCE (http://cedcommerce.com/)
+* @license   http://cedcommerce.com/license-agreement.txt
+*/
+-->
+{{ header }}{{ column_left }} 
+<div id="content">
+  <div class="page-header">
+    <div class="container-fluid">
+      <div class="pull-right">
+        <a onclick="validate()" data-toggle="tooltip" title="{{ button_refund }}" class="btn btn-primary">{{ button_refund }}</a>
+        <a href="{{ back }}" data-toggle="tooltip" title="{{ button_cancel }}" class="btn btn-default">{{ button_cancel }}</a>
+      </div>
+      <h1>{{ heading_title }}</h1>
+      <ul class="breadcrumb">
+        {% for breadcrumb in breadcrumbs %} 
+        <li><a href="{{ breadcrumb['href'] }}">{{ breadcrumb['text'] }}</a></li>
+        {% endfor %} 
+      </ul>
+    </div>
+  </div>
+
+  <div class="container-fluid">
+   {% if (error_warning) %} 
+    <div class="alert alert-danger"><i class="fa fa-exclamation-circle"></i> {{ error_warning }} 
+      <button type="button" class="close" data-dismiss="alert">&times;</button>
+    </div>
+    {% endif %} 
+    {% if (success) %} 
+    <div class="alert alert-success"><i class="fa fa-check-circle"></i> {{ success }} 
+      <button type="button" class="close" data-dismiss="alert">&times;</button>
+    </div>
+    {% endif %} 
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title"><i class="fa fa-list"></i> {{ text_list }}</h3>
+      </div>
+    <div class="panel-body">
+      <form action="{{ refund }}" class="form-horizontal" id="refund-form"  method="POST" >
+        {% if (show_order_list) %} 
+          {% if (order_list) %} 
+            <div class="tab-content">
+              <table class="table table-bordered table-hover">
+                <thead>
+                  <td class="left">{{ entry_shopee_order_id }}</td>
+                  <td class="left">{{ entry_name }}</td>
+                  <td class="left">{{ entry_customerEmailId }}</td>
+                  <td class="left">{{ entry_action }}</td>
+                </thead>
+                {% for order in order_list %} 
+                  <tr>
+                    <td class="left">{{ order['shopee_order_id'] }}</td>
+                    <td class="left">{{ order['shippingInfo']['postalAddress']['name'] }}</td>
+                    <td class="left">{{ order['customerEmailId'] }}</td>
+                    <td class="left"><a href="{{ add~'&order_id='~order['shopee_order_id'] }}">Refund</a></td>
+                  </tr>
+                {% endfor %} 
+              </table>
+            </div>   
+          {% else %}  
+           <div class="tab-content">
+              <table class="form">
+                <tr><td> No Order Eligible for Refund. </td></tr>
+              </table>
+            </div>
+          {% endif %} 
+        {% else %} 
+        <div class="tab-content">
+          {% if (order_info['orderLines'] is defined) %} 
+            {% if (order_info['shopee_order_id'] is defined) %} 
+              <input type="hidden" name="shopee_order_id" value="{{ order_info['shopee_order_id'] }}" />
+              <input type="hidden" name="order_id" value="{{ order_id }}" />
+            {% endif %} 
+            
+            {% for order_line in order_info['orderLines'] %} 
+              {% for order_item in order_line %} 
+                {% set order_item = array_filter(order_item) %} 
+                <h2> OrderLinenumber : {{ order_line_number = order_item['lineNumber'] }}</h2>
+                {% for key,item in order_item %} 
+                  {% if (key == 'item' ) %} 
+                  <table class="form">
+                    <tr>
+                      <td>{{ key }}</td>
+                      <td>
+                        <h2>productName : {{ item['productName'] }}</h2>
+                        <h2>sku : {{ item['sku'] }}</h2>
+                      </td>
+                    </tr>
+                    {% endif %} 
+                    {% if (key == 'charges' ) %} 
+                    <tr>
+                      <td>{{ key }}</td>
+                      <td>
+                        {% for k,charge in item['charge'] %} 
+                          <p> chargeType : {{ charge['chargeType'] }}</p>
+                          <p> chargeName : {{ charge['chargeName'] }}</p>
+                          <p> taxAmount : {{ 'currency : '~charge['chargeAmount']['currency'] ~' amount : '~ charge['chargeAmount']['amount'] }}</p>
+                          <p> taxName : {{ charge['tax']['taxName'] }}</p>
+                          <p> taxAmount : {{ 'currency : '~charge['tax']['taxAmount']['currency'] ~' amount : '~ charge['tax']['taxAmount']['amount'] }}</p>
+                          
+                            <input type="hidden" name="orderLine[{{ order_line_number }}][chargeType]" value="{{ charge['chargeType'] }}" >
+                            <input type="hidden" name="orderLine[{{ order_line_number }}][chargeName]" value="{{ charge['chargeName'] }}" >
+                            <input type="hidden" name="orderLine[{{ order_line_number }}][chargeAmount][currency]" value="{{ charge['chargeAmount']['currency'] }}" >
+                            <input type="hidden" name="orderLine[{{ order_line_number }}][chargeAmount][amount]" value="{{ charge['chargeAmount']['amount'] }}" >
+                            <input type="hidden" name="orderLine[{{ order_line_number }}][taxName]" value="{{ charge['tax']['taxName'] }}" >
+                            <input type="hidden" name="orderLine[{{ order_line_number }}][taxAmount][currency]" value="{{ charge['tax']['taxAmount']['currency'] }}" >
+                            <input type="hidden" name="orderLine[{{ order_line_number }}][taxAmount][amount]" value="{{ charge['tax']['taxAmount']['amount'] }}" >
+                        {% endfor %} 
+                      </td>
+                    </tr>
+                  </table>
+                  <table class="form">
+                    <tr>
+                      <td>{{ text_refundComments }}</td><td><input type="text" id="refundComments" name="orderLine[{{ order_line_number }}][refundComments]" value="{{ refundComments }}" ><input type="hidden" name="orderLine[{{ order_line_number }}][order_id]" value="{{ order_id }}"></td>
+                    </tr> 
+                    <tr style="display: none;">
+                      <td>{{ text_feedbackOptions }}</td>
+                      <td>
+                        <select id="feedbackOptions" name="orderLine[{{ order_line_number }}][feedbackOptions]" >
+                        {% if (count(feedbackOptions)) %} 
+                          {% for cName in feedbackOptions %} 
+                            {% if (carrierName == cName) %} 
+                              <option selected="selected"  value="{{ cName }}" >{{ cName }}</option>
+                            {% else %} 
+                              <option value="{{ cName }}" >{{ cName }}</option>
+                            {% endif %} 
+                          {% endfor %}  
+                        {% endif %} 
+                        </select>
+                      </td>
+                    </tr> 
+                    <tr>
+                      <td>{{ text_refundReasons }}</td>
+                      <td>
+                        <select id="refundReasons" name="orderLine[{{ order_line_number }}][refundReasons]" >
+                        {% if (count(refundReasons)) %} 
+                          {% for mCode in refundReasons %} 
+                            {% if (refundReason == mCode) %} 
+                              <option selected="selected" value="{{ mCode }}" >{{ mCode }}</option>
+                            {% else %} 
+                              <option value="{{ mCode }}" >{{ mCode }}</option>
+                            {% endif %} 
+                          {% endfor %}  
+                        {% endif %} 
+                        </select>
+                      </td>
+                    </tr>           
+                    </table>
+                  {% endif %} 
+                {% endfor %} 
+              {% endfor %} 
+            {% endfor %} 
+          {% endif %} 
+        </div>
+      {% endif %}      
+    </form>
+  </div>
+  </div>
+</div>
+</div>
+<script type="text/javascript">
+  function validate() {
+    var refundComments = document.getElementById('refundComments');
+    var refundReasons = document.getElementById('refundReasons');
+    if (refundReasons && refundComments && refundReasons.value && refundComments.value ) {
+      document.getElementById('refund-form').submit();
+    } else {
+      if (refundReasons && refundReasons.value) {
+         alert('please Fill refundComments ');
+        return false;
+      } else if (refundComments && refundComments.value ) {
+         alert('please Fill refundReasons ');
+        return false;
+      } else {
+        alert('please Fill all details');
+        return false;
+      }
+    }
+    
+  }
+</script>
+{{ footer }}

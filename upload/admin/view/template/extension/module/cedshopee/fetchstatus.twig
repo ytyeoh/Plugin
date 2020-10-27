@@ -1,0 +1,159 @@
+<!--
+/**
+* CedCommerce
+*
+* NOTICE OF LICENSE
+*
+* This source file is subject to the End User License Agreement (EULA)
+* that is bundled with this package in the file LICENSE.txt.
+* It is also available through the world-wide-web at this URL:
+* http://cedcommerce.com/license-agreement.txt
+*
+* @category  modules
+* @package   cedshopee
+* @author    CedCommerce Core Team 
+* @copyright Copyright CEDCOMMERCE (http://cedcommerce.com/)
+* @license   http://cedcommerce.com/license-agreement.txt
+*/
+-->
+{{ header }}{{ column_left }} 
+<div id="content">
+  <div class="page-header">
+    <div class="container-fluid">
+      <div class="pull-right">
+        <a onclick="processReport();" data-toggle="tooltip" title="Fetch Status" class="btn btn-info">Fetch Status</a>
+        <a href="{{ cancel }}" data-toggle="tooltip" title="{{ 'Back' }}" class="btn btn-default"><i class="fa fa-reply"></i></a></div>
+      <h1>{{ heading_title }}</h1>
+      <ul class="breadcrumb">
+        {% for breadcrumb in breadcrumbs %} 
+        <li><a href="{{ breadcrumb['href'] }}">{{ breadcrumb['text'] }}</a></li>
+        {% endfor %} 
+      </ul>
+    </div>
+  </div>
+    <div class="container-fluid">
+      {% if (error_warning) %} 
+        <div class="alert alert-danger"><i class="fa fa-exclamation-circle"></i> {{ error_warning }} 
+          <button type="button" class="close" data-dismiss="alert">&times;</button>
+        </div>
+        {% endif %} 
+        {% if (success) %} 
+        <div class="alert alert-success"><i class="fa fa-check-circle"></i> {{ success }} 
+          <button type="button" class="close" data-dismiss="alert">&times;</button>
+        </div>
+        {% endif %} 
+        <div class="panel panel-default">
+          <div class="panel-heading">
+            <h3 class="panel-title"><i class="fa fa-pencil"></i> {{ 'Fruugo Stock' }}</h3>
+          </div>
+        <div class="panel-body">
+        <div class="content" style="height: 350px;overflow: auto; padding: 10px;">
+            <div id="myModal" class="modal">
+                <div class="modal-content">
+                    <span class="close">&times;</span>
+                    <div id="popup_content"><img src="view/image/cedshopee/Loader.gif">
+                        <h2>Please wait processing status update........</h2></div>
+                </div>
+            </div>
+            <ol id="progress">
+            </ol>
+        </div>
+       </div>
+      </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    var modal = document.getElementById('myModal');
+    var span = document.getElementsByClassName("close")[0];
+    span.onclick = function () {
+        modal.style.display = "none";
+    }
+</script>
+<script type="text/javascript">
+    var pagination_offset = 0;
+    var pagination_entries_per_page = 100;
+    function processReport() {
+        modal.style.display = "block";
+        sendUpdateRequest(pagination_offset, pagination_entries_per_page);
+    }
+    function sendUpdateRequest(pagination_offset, pagination_entries_per_page) {
+        $.ajax({
+            type: "POST",
+            url: 'index.php?route=extension/module/cedshopee/product/updatestatus&user_token={{ user_token }}',
+            data: {"pagination_offset" : pagination_offset, "pagination_entries_per_page": pagination_entries_per_page},
+            success: function (response) {
+                response = JSON.parse(response);
+                if (response) {
+                    var obj = response;
+                    if (obj.success) {
+                        $("#progress").append('<li class="success" >' + obj.message + '</li>');
+                        sendUpdateRequest(obj.pagination_offset, pagination_entries_per_page);
+                    } else {
+                        $("#progress").append('<li class="warning" >' + obj.message + '</li>');
+                        sendUpdateRequest(pagination_offset, pagination_entries_per_page);
+                    }
+                }
+            }
+            ,
+            statusCode: {
+                500: function (xhr) {
+                    if (window.console) console.log(xhr.responseText);
+                },
+                400: function (response) {
+                    $("#progress").append('<span style="color:Red;">Error While Uploading Please Check</span>');
+                },
+                404: function (response) {
+
+                    $("#progress").append('<span style="color:Red;">Error While Uploading Please Check</span>');
+                }
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                if (window.console) console.log(xhr.responseText);
+                alert(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+
+            },
+        });
+    }
+</script>
+<style type="text/css">
+    /* The Modal (background) */
+    .modal {
+        display: none; /* Hidden by default */
+        position: fixed; /* Stay in place */
+        z-index: 1; /* Sit on top */
+        left: 0;
+        top: 0;
+        width: 100%; /* Full width */
+        height: 100%; /* Full height */
+        overflow: auto; /* Enable scroll if needed */
+        background-color: rgb(0, 0, 0); /* Fallback color */
+        background-color: rgba(0, 0, 0, 0.4); /* Black w/ opacity */
+    }
+
+    /* Modal Content/Box */
+    .modal-content {
+        background-color: #fefefe;
+        margin: 15% auto; /* 15% from the top and centered */
+        padding: 20px;
+        border: 1px solid #888;
+        width: 20%; /* Could be more or less, depending on screen size */
+    }
+
+    /* The Close Button */
+    .close {
+        color: #aaa;
+        float: right;
+        font-size: 28px;
+        font-weight: bold;
+    }
+
+    .close:hover,
+    .close:focus {
+        color: black;
+        text-decoration: none;
+        cursor: pointer;
+    }
+</style>
+
+{{ footer }}

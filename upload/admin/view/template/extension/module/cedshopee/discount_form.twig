@@ -1,0 +1,167 @@
+{{ header }}{{ column_left }} 
+<div id="content">
+  <div class="page-header">
+    <div class="container-fluid">
+      <div class="pull-right">
+       <a onclick="$('#form').submit();" class="btn btn-primary" title="{{ button_save }}"><i class="fa fa-save"></i></a>
+        <a href="{{ cancel }}" data-toggle="tooltip" title="{{ button_cancel }}" class="btn btn-default"><i class="fa fa-reply"></i></a>
+
+       </div>
+        <h1>{{ heading_title }}</h1>
+        <ul class="breadcrumb">
+          {% for breadcrumb in breadcrumbs %} 
+          <li><a href="{{ breadcrumb['href'] }}">{{ breadcrumb['text'] }}</a></li>
+          {% endfor %} 
+        </ul>
+      </div>
+    </div>
+  
+  <div class="container-fluid">
+    {% if (error_warning) %} 
+    <div class="alert alert-danger"><i class="fa fa-exclamation-circle"></i> {{ error_warning }} 
+      <button type="button" class="close" data-dismiss="alert">&times;</button>
+    </div>
+    {% endif %} 
+
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          <h3 class="panel-title"><i class="fa fa-pencil"></i> {{ text_form }}</h3>
+        </div>
+            <div class="panel-body">
+              <form action="{{ action }}" method="post" enctype="multipart/form-data" id="form">
+              <input type="hidden" id="timezone_offset_minutes" name="timezone_offset_minutes" value="" class="form-control" />
+                <div class="form-group required">
+                    <label class="col-sm-2 control-label" for="input-discount_name">{{ entry_discount_name }}</label>
+                    <div class="col-sm-10">
+                      <input type="text" name="discount_name" value="{{ discount_name }}" class="form-control" />
+                        <input type="hidden" name="discount_id" value="{{ discount_id }}" />
+                      {% if (error_discount_name) %} 
+                      <span class="error">{{ error_discount_name }}</span>
+                      {% endif %} 
+                      </div>
+                  </div>
+                    <div class="form-group required">
+                       <label class="col-sm-2 control-label" for="input-start_date">{{ entry_start_date }}</label>
+                       <div class='input-group date' id='datetimepicker1'>
+                            <input type="text" name="start_date" value="{{ start_date }}" class="form-control" style="margin-left: 1.2em; width: 98%" />
+                            <span class="input-group-addon"> <i class="fa fa-calendar"></i> </span>
+                            {% if (error_start_date) %} 
+                            <div class="text-danger">{{ error_discount_name }}</div>
+                            {% endif %} 
+                        </div>
+                    </div>
+                    <div class="form-group required">
+                      <label class="col-sm-2 control-label" for="input-end_date">{{ entry_end_date }}</label>
+                      <div class='input-group date' id='datetimepicker2'>
+                            <input type="text" name="end_date" value="{{ end_date }}" class="form-control" style="margin-left: 1.2em; width: 98%" />
+                            <span class="input-group-addon"> <i class="fa fa-calendar"></i> </span>
+                            {% if (error_end_date) %} 
+                            <div class="text-danger">{{ error_discount_name }}</div>
+                            {% endif %} 
+                        </div>
+                    </div>
+                    <div class="form-group">
+                       <label class="col-sm-2 control-label" for="input-items">{{ entry_items }}</label>
+                        <div class="col-sm-10">
+                          <input type="text" name="items" value="" id="input-items" class="form-control" />
+                          <div id="shopee-items" class="well well-sm" style="height: 150px; overflow: auto;">
+                            {% for shopee_item in shopee_items %} 
+                                <div id="shopee-item{{ shopee_item['shopee_item_id'] }}"> <i class="fa fa-minus-circle"></i> {{ shopee_item['name'] }}
+                                <input type="hidden" name="shopee_item[]" value="{{ shopee_item['shopee_item_id'] }}" />
+                                </div>
+                            {% endfor %} 
+                          </div>
+                        </div>
+                    </div>
+
+                  <div class="form-group required">
+                      <label class="col-sm-2 control-label" for="input-purchase_limit">{{ entry_purchase_limit }}</label>
+                      <div class="col-sm-10">
+                          <input type="text" name="purchase_limit" value="{{ purchase_limit }}" class="form-control" />
+                      </div>
+                  </div>
+
+                    <div class="form-group required">
+                      <label class="col-sm-2 control-label" for="input-price_type">{{ entry_price_type }}</label>
+                      <div class="col-sm-10">
+                        <select name="price_type" class="form-control">
+                          <option value="1" {% if (price_type == 1) %} selected="selected" {% endif %} >Fixed Price</option>
+                          <option value="2" {% if (price_type == 2) %} selected="selected" {% endif %} >Percentage</option>
+                        </select>
+                      </div>
+                    </div>
+
+                    <div class="form-group required">
+                      <label class="col-sm-2 control-label" for="input-discount_item_price">{{ entry_discount_item_price }}</label>
+                      <div class="col-sm-10">
+                        <input type="text" name="discount_item_price" value="{{ discount_item_price }}" class="form-control" />
+                        <span class="error" style="color: red;">(If item doesn't have variation then Item Discount Percentage field is mandatory)</span>
+                      </div>
+                    </div>
+
+
+                    <div class="form-group required">
+                      <label class="col-sm-2 control-label" for="input-discount_item_variation_price">{{ entry_discount_item_variation_price }}</label>
+                      <div class="col-sm-10">
+                        <input type="text" name="discount_item_variation_price" value="{{ discount_item_variation_price }}" class="form-control" />
+                      </div>
+                    </div>
+                  
+              </form>
+            </div>
+     </div>
+  </div>
+</div>
+
+<script type="text/javascript">
+    $(function () {
+        $('#datetimepicker1').datetimepicker();
+        $('#datetimepicker2').datetimepicker();
+    });
+    $(document).ready(function() {
+        var timezone_offset_minutes = new Date().getTimezoneOffset();
+        timezone_offset_minutes = timezone_offset_minutes == 0 ? 0 : -timezone_offset_minutes;
+        $('#timezone_offset_minutes').val(timezone_offset_minutes);
+    })
+</script>            
+<style type="text/css">
+  .form-control{
+    margin-bottom: 15px;
+  }
+  .form-group + .form-group {
+  border-top: none;
+}
+</style>
+
+<script type="text/javascript">
+    // Store Items
+    $('input[name=\'items\']').autocomplete({
+        'source': function(request, response) {
+            $.ajax({
+                url: 'index.php?route=extension/module/cedshopee/product/items&user_token={{ user_token }}&filter_name=' +  encodeURIComponent(request),
+                dataType: 'json',
+                success: function(json) {
+                    response($.map(json, function(item) {
+                        return {
+                            label: item['name'],
+                            value: item['shopee_item_id']
+                        }
+                    }));
+                }
+            });
+        },
+        'select': function(item) {
+            $('input[name=\'items\']').val('');
+
+            $('#shopee-items' + item['value']).remove();
+
+            $('#shopee-items').append('<div id="shopee-items' + item['value'] + '"><i class="fa fa-minus-circle"></i> ' + item['label'] + '<input type="hidden" name="shopee_items[]" value="' + item['value'] + '" /></div>');
+        }
+    });
+
+    $('#shopee-items').delegate('.fa-minus-circle', 'click', function() {
+        $(this).parent().remove();
+    });
+</script>
+
+{{ footer }}

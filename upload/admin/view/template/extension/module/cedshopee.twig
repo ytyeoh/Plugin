@@ -1,0 +1,526 @@
+{{ header }}{{ column_left }}
+<div id="content">
+    <div class="page-header">
+        <div class="container-fluid">
+            <div class="pull-right">
+                <button type="submit" form="form-google-hangouts" data-toggle="tooltip" title="{{ button_save }}" class="btn btn-primary"><i class="fa fa-save"></i></button>
+                <a href="{{ cancel }}" data-toggle="tooltip" title="{{ button_cancel }}" class="btn btn-default"><i class="fa fa-reply"></i></a></div>
+            <h1>{{ heading_title }}</h1>
+            <ul class="breadcrumb">
+                {% for breadcrumb in breadcrumbs %}
+                    <li><a href="{{ breadcrumb['href'] }}">{{ breadcrumb['text'] }}</a></li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+    <div class="container-fluid">
+        {% if (error_warning) %}
+            <div class="alert alert-danger"><i class="fa fa-exclamation-circle"></i> {{ error_warning }}
+                <button type="button" class="close" data-dismiss="alert">&times;</button>
+            </div>
+        {% endif %}
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title"><i class="fa fa-pencil"></i> {{ text_edit }}</h3>
+            </div>
+            <div class="panel-body">
+                <form action="{{ action }}" method="post" id="form-cedshopee" class="form-horizontal">
+                    <ul class="nav nav-tabs">
+                        <li class="active"><a href="#tab-general" data-toggle="tab">{{ tab_general }}</a></li>
+                        <li><a href="#tab-api" data-toggle="tab">{{ tab_api }}</a></li>
+                        <li><a href="#tab-product" data-toggle="tab">{{ tab_product }}</a></li>
+                        <li><a href="#tab-order" data-toggle="tab">{{ tab_order }}</a></li>
+                        <li><a href="#tab-cron" data-toggle="tab">{{ tab_cron }}</a></li>
+                    </ul>
+
+                    <div class="tab-content">
+                        <div class="tab-pane active in" id="tab-general">
+                            <div class="form-group">
+                                <label class="col-sm-4 control-label" for="input-status">{{ entry_status }}</label>
+                                <div class="col-sm-4">
+                                    <select name="cedshopee_status" id="input-status" class="form-control">
+                                        {% if (cedshopee_status) %}
+                                            <option value="1" selected="selected">{{ text_enabled }}</option>
+                                            <option value="0">{{ text_disabled }}</option>
+                                        {% else %}
+                                            <option value="1">{{ text_enabled }}</option>
+                                            <option value="0" selected="selected">{{ text_disabled }}</option>
+                                        {% endif %}
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="col-sm-4 control-label" for="input-debug">{{ entry_debug }}</label>
+                                <div class="col-sm-4">
+                                    <select name="cedshopee_debug" id="input-log" class="form-control">
+                                        {% if (cedshopee_debug) %}
+                                            <option value="1" selected="selected">{{ text_enabled }}</option>
+                                            <option value="0">{{ text_disabled }}</option>
+                                        {% else %}
+                                            <option value="1">{{ text_enabled }}</option>
+                                            <option value="0" selected="selected">{{ text_disabled }}</option>
+                                        {% endif %}
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- // General Tab -->
+
+                        <!-- API Tab -->
+                        <div class="tab-pane fade" id="tab-api">
+                            <div class="form-group">
+                                <label class="col-sm-4 control-label" for="input-api_mode">{{ entry_api_mode }}</label>
+                                <div class="col-sm-4">
+                                    <select name="cedshopee_api_mode" id="input-api_mode" class="form-control" onchange="setApiUrl(this.value);">
+                                        <option value="1" {% if (cedshopee_api_mode == 1) %} selected="selected" {% endif %}>{{ text_sandbox }}</option>
+                                        <option value="2" {% if (cedshopee_api_mode == 2) %} selected="selected" {% endif %}>{{ text_live }}</option>
+                                    </select>
+                                    {% if (error_api_mode) %}
+                                        <div class="text-danger">{{ error_mode }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="col-sm-4 control-label" for="input-api_url">{{ entry_api_url }}</label>
+                                <div class="col-sm-4">
+                                    <input type="text" name="cedshopee_api_url" value="{{ cedshopee_api_url }}" placeholder="{{ entry_api_url }}" id="input-api_url" class="form-control" />
+                                    {% if (error_api_url) %}
+                                        <div class="text-danger">{{ error_api_url }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="col-sm-4 control-label" for="input-partner_id">{{ entry_partner_id }}</label>
+                                <div class="col-sm-4">
+                                    <input type="text" name="cedshopee_partner_id" value="{{ cedshopee_partner_id }}" placeholder="{{ entry_partner_id }}" id="input-partner_id" class="form-control"  />
+                                    {% if (error_partner_id) %}
+                                        <div class="text-danger">{{ error_partner_id }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="col-sm-4 control-label" for="input-shop_id">{{ entry_shop_id }}</label>
+
+                                <div class="col-sm-4">
+                                    <input name="cedshopee_shop_id" placeholder="{{ entry_shop_id }}" id="input-shop_id"  value="{{ cedshopee_shop_id }}" class="form-control" />
+                                    {% if (error_shop_id) %}
+                                        <div class="text-danger">{{ error_shop_id }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="col-sm-4 control-label" for="input-shop_signature">{{ entry_shop_signature }}</label>
+                                <div class="col-sm-4">
+                                    <input name="cedshopee_shop_signature"  placeholder="{{ entry_shop_signature }}" id="input-shop_signature"  value="{{ cedshopee_shop_signature }}" class="form-control" />
+                                    {% if (error_shop_signature) %}
+                                        <div class="text-danger">{{ error_shop_signature }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="col-sm-4 control-label" for="input-redirect_url">{{ entry_redirect_url }}</label>
+                                <div class="col-sm-4">
+                                    <input name="cedshopee_redirect_url"  placeholder="{{ entry_redirect_url }}" id="input-redirect_url"  value="{{ cedshopee_redirect_url }}" class="form-control" readonly />
+                                    {% if (error_redirect_url) %}
+                                        <div class="text-danger">{{ error_redirect_url }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="col-sm-4 control-label" for="input-validate"><span data-toggle="tooltip" title="{{ help_validate }}">{{ entry_validate }}</span></label>
+                                <div class="col-sm-4">
+                                    <a onclick="getValidationCredentials();" class="btn btn-primary" title="{{ button_validate }}">{{ button_validate }}</a>
+                                </div>
+                            </div>
+
+                        </div>
+                        <!-- // API Tab -->
+
+                        <!-- Product Tab -->
+                        <div class="tab-pane fade" id="tab-product">
+                            <div class="form-group">
+                                <label class="col-sm-4 control-label" for="input-price_choice"><span data-toggle="tooltip" title="{{ help_price_choice }}">{{ entry_price_choice }}</span></label>
+                                <div class="col-sm-4">
+                                    <select name="cedshopee_price_choice" id="input-price_choice" onchange="shopeePrice(this);" class="form-control">
+                                        {% for key,value in price_choices %}
+                                            {% if (cedshopee_price_choice == key) %}
+                                                <option value="{{ key }}" selected="selected">{{ value }}</option>
+                                            {% else %}
+                                                <option value="{{ key }}">{{ value }}</option>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-group" id="variable_price_wrapper">
+                                <label class="col-sm-4 control-label"for="input-variable_price">{{ entry_variable_price }}</label>
+                                <div class="col-sm-4">
+                                    <input type="text" name="cedshopee_variable_price" value="{{ cedshopee_variable_price }}" placeholder="{{ entry_variable_price }}" id="input-variable_price" class="form-control" />
+                                </div>
+                            </div>
+
+                            {#                    <div class="form-group">#}
+                            {#                        <label class="col-sm-4 control-label" for="input-auto_sync">{{ entry_auto_sync }}</label>#}
+                            {#                        <div class="col-sm-4">#}
+                            {#                            <select name="cedshopee_auto_sync" id="input-auto_sync" class="form-control">#}
+                            {#                                {% if (cedshopee_auto_sync) %}#}
+                            {#                                    <option value="1" selected="selected">{{ text_enabled }}</option>#}
+                            {#                                    <option value="0">{{ text_disabled }}</option>#}
+                            {#                                {% else %}#}
+                            {#                                    <option value="1">{{ text_enabled }}</option>#}
+                            {#                                    <option value="0" selected="selected">{{ text_disabled }}</option>#}
+                            {#                                {% endif %}#}
+                            {#                            </select>#}
+                            {#                        </div>#}
+                            {#                    </div>#}
+                            <div class="form-group">
+                                <label class="col-sm-4 control-label" for="input-cedshopee_update_inventry"><span data-toggle="tooltip" title="{{ help_update_inventry }}">{{ entry_update_inventry }}</span></label>
+                                <div class="col-sm-4">
+                                    <select name="cedshopee_update_inventry" id="input-update_inventry" class="form-control">
+                                        {% if (cedshopee_update_inventry) %}
+                                            <option value="1" selected="selected">{{ text_enabled }}</option>
+                                            <option value="0">{{ text_disabled }}</option>
+                                        {% else %}
+                                            <option value="1">{{ text_enabled }}</option>
+                                            <option value="0" selected="selected">{{ text_disabled }}</option>
+                                        {% endif %}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-4 control-label" for="input-update_price"><span data-toggle="tooltip" title="{{ help_update_price }}">{{ help_update_price }}</span></label>
+                                <div class="col-sm-4">
+                                    <select name="cedshopee_update_price" id="input-update_price" class="form-control">
+                                        {% if (cedshopee_update_price) %}
+                                            <option value="1" selected="selected">{{ text_enabled }}</option>
+                                            <option value="0">{{ text_disabled }}</option>
+                                        {% else %}
+                                            <option value="1">{{ text_enabled }}</option>
+                                            <option value="0" selected="selected">{{ text_disabled }}</option>
+                                        {% endif %}
+                                    </select>
+                                </div>
+                            </div>
+                            {#                    <div class="form-group">#}
+                            {#                        <label class="col-sm-4 control-label" for="input-update_all"><span data-toggle="tooltip" title="{{ help_update_all }}">{{ entry_update_all }}</span></label>#}
+                            {#                        <div class="col-sm-4">#}
+                            {#                            <select name="cedshopee_update_all" id="input-update_all" class="form-control">#}
+                            {#                                {% if (cedshopee_update_all) %}#}
+                            {#                                    <option value="1" selected="selected">{{ text_enabled }}</option>#}
+                            {#                                    <option value="0">{{ text_disabled }}</option>#}
+                            {#                                {% else %}#}
+                            {#                                    <option value="1">{{ text_enabled }}</option>#}
+                            {#                                    <option value="0" selected="selected">{{ text_disabled }}</option>#}
+                            {#                                {% endif %}#}
+                            {#                            </select>#}
+                            {#                        </div>#}
+                            {#                    </div>#}
+                        </div>
+                        <!-- // Product Tab -->
+
+                        <!-- Order Tab -->
+                        <div class="tab-pane fade" id="tab-order">
+                            <div class="form-group">
+                                <label class="col-sm-4 control-label" for="input-order_email">{{ entry_order_email }}</label>
+                                <div class="col-sm-4">
+                                    <input type="text" name="cedshopee_order_email" value="{{ cedshopee_order_email }}" placeholder="{{ entry_order_email }}" id="input-order_email" class="form-control"  />
+                                    {% if (error_order_email) %}
+                                        <div class="text-danger">{{ error_order_email }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="col-sm-4 control-label" for="input-auto_order">{{ entry_auto_order }}</label>
+                                <div class="col-sm-4">
+                                    <select name="cedshopee_auto_order" id="input-auto_order" class="form-control">
+                                        {% if (cedshopee_auto_order) %}
+                                            <option value="1" selected="selected">{{ text_enabled }}</option>
+                                            <option value="0">{{ text_disabled }}</option>
+                                        {% else %}
+                                            <option value="1">{{ text_enabled }}</option>
+                                            <option value="0" selected="selected">{{ text_disabled }}</option>
+                                        {% endif %}
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="col-sm-4 control-label" for="input-order_import">{{ entry_order_import }}</label>
+                                <div class="col-sm-4">
+                                    <select name="cedshopee_order_import" id="input-order_import" class="form-control">
+                                        <option value="">--{{ entry_order_import }}--</option>
+                                        {% for order_import in order_statuses %}
+                                            {% if (cedshopee_order_import == order_import['order_status_id']) %}
+                                                <option value="{{ order_import['order_status_id'] }}" selected="selected">{{ order_import['name'] }}</option>
+                                            {% else %}
+                                                <option value="{{ order_import['order_status_id'] }}">{{ order_import['name'] }}</option>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="col-sm-4 control-label" for="input-order_cancel">{{ entry_order_cancel }}</label>
+                                <div class="col-sm-4">
+                                    <select name="cedshopee_order_cancel" id="input-order_cancel" class="form-control">
+                                        <option value="">--{{ entry_order_cancel }}--</option>
+                                        {% for order_cancel in order_statuses %}
+                                            {% if (cedshopee_order_cancel == order_cancel['order_status_id']) %}
+                                                <option value="{{ order_cancel['order_status_id'] }}" selected="selected">{{ order_cancel['name'] }}</option>
+                                            {% else %}
+                                                <option value="{{ order_cancel['order_status_id'] }}">{{ order_cancel['name'] }}</option>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="col-sm-4 control-label" for="input-order_ship">{{ entry_order_ship }}</label>
+                                <div class="col-sm-4">
+                                    <select name="cedshopee_order_ship" id="input-order_ship" class="form-control">
+                                        <option value="">--{{ entry_order_ship }}--</option>
+                                        {% for order_ship in order_statuses %}
+                                            {% if (cedshopee_order_ship == order_ship['order_status_id']) %}
+                                                <option value="{{ order_ship['order_status_id'] }}" selected="selected">{{ order_ship['name'] }}</option>
+                                            {% else %}
+                                                <option value="{{ order_ship['order_status_id'] }}">{{ order_ship['name'] }}</option>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="col-sm-4 control-label" for="input-order_carrier">{{ entry_order_carrier }}</label>
+                                <div class="col-sm-4">
+                                    <select name="cedshopee_order_carrier" id="input-order_carrier" class="form-control">
+                                        <option value="">--{{ entry_order_carrier }}--</option>
+                                        {% for order_carrier in order_carriers %}
+                                            {% if (cedshopee_order_carrier == order_carrier['extension_id']) %}
+                                                <option value="{{ order_carrier['extension_id'] }}" selected="selected">{{ order_carrier['code'] }}</option>
+                                            {% else %}
+                                                <option value="{{ order_carrier['extension_id'] }}">{{ order_carrier['code'] }}</option>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="col-sm-4 control-label" for="input-order_payment">{{ entry_order_payment }}</label>
+                                <div class="col-sm-4">
+                                    <select name="cedshopee_order_payment" id="input-order_payment" class="form-control">
+                                        <option value="">--{{ entry_order_payment }}--</option>
+                                        {% for order_payment in order_pay %}
+                                            {% if (cedshopee_order_payment == order_payment['extension_id']) %}
+                                                <option value="{{ order_payment['extension_id'] }}" selected="selected">{{ order_payment['code'] }}</option>
+                                            {% else %}
+                                                <option value="{{ order_payment['extension_id'] }}">{{ order_payment['code'] }}</option>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+
+                        </div>
+                        <!-- // Order Tab -->
+
+                        <!-- Cron Tab -->
+                        <div class="tab-pane fade" id="tab-cron">
+                            {% if (crons) %}
+                                {% for label,url in crons %}
+                                    <div class="form-group">
+                                        <label class="col-sm-4 control-label" for="input-debug">{{ label }}</label>
+                                        <div class="col-sm-6"><span>{{ url }}</span></div>
+                                    </div>
+                                {% endfor %}
+                            {% endif %}
+                        </div>
+                        <!-- // Cron Tab -->
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <script type="text/javascript">
+        function shopeePrice(selected){
+
+            if(selected){
+                var  array = ["2","3","4","5"];
+                if (array.indexOf(selected.value) != -1) {
+                    document.getElementById("variable_price_wrapper").style.display = "";
+                } else {
+                    document.getElementById("variable_price_wrapper").style.display = "none";
+                }
+            }
+        }
+        window.onload = function(){
+            var price_choice = document.getElementById("input-price_choice");
+            var  array = ["2","3","4","5"];
+            if (price_choice && price_choice.value) {
+                if (array.indexOf(price_choice.value) != -1) {
+                    document.getElementById("variable_price_wrapper").style.display = "";
+                } else {
+                    document.getElementById("variable_price_wrapper").style.display = "none";
+                }
+            } else {
+                document.getElementById("variable_price_wrapper").style.display = "none";
+            }
+        }
+    </script>
+    <script type="text/javascript">
+        function setApiUrl(value)
+        {
+            if(value == 1)
+            {
+                document.getElementById('input-api_url').value = 'https://partner.uat.shopeemobile.com/api/v1/';
+            } else {
+                document.getElementById('input-api_url').value = 'https://partner.shopeemobile.com/api/v1/';
+            }
+        }
+
+        function getValidationCredentials(){
+            var api_url = $("#input-api_url").val();
+            var partner_id = $("#input-partner_id").val();
+            var shop_id = $("#input-shop_id").val();
+            var shop_signature = $("#input-shop_signature").val();
+            var redirect_url = $("#input-redirect_url").val();
+            if((api_url.length != 0) && (partner_id.length != 0) && (shop_signature.length != 0) && (redirect_url.length != 0) && (shop_id.length != 0))
+            {
+                $.ajax({
+                    url: 'index.php?route=extension/module/cedshopee/generateToken&user_token={{ user_token }}',
+                    type: 'post',
+                    data: {
+                        shop_signature : shop_signature,
+                        redirect_url : redirect_url,
+                    },
+                    dataType: 'json',
+                    success: function(json) {
+
+                        if (!json['success']) {
+                            $('.error-message').remove();
+                            $('#validate').after('<div class="error-message" style="margin-left:2px; color:red;">'+json['message']+'</div>');
+                        }
+
+                        if (json['success']) {
+                            if((partner_id.length == 0) || (json['message'].length == 0)){
+                                alert('Please fill in all the above details.');
+                                return false;
+                            } else {
+                                var url = api_url+'shop/auth_partner?id='+partner_id +'&token='+ json['message'] +'&redirect='+redirect_url;
+                                window.open(url);
+                            }
+                        }
+                    },
+                    error: function(xhr, ajaxOptions, thrownError) {
+                        alert(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+                    }
+                });
+            } else {
+                if(api_url.length == 0)
+                {
+                    alert("API URL is empty, please select API Mode");
+                }
+
+                if(partner_id.length == 0)
+                {
+                    alert("Partner ID is empty, please fill in Partner ID");
+                }
+
+                if(shop_signature.length == 0)
+                {
+                    alert("Signature is empty, please fill in Shopee key");
+                }
+
+                if(shop_id.length == 0)
+                {
+                    alert("Shop ID is empty, please fill in Shopee Shop ID");
+                }
+            }
+
+        }
+    </script>
+    <style type="text/css">
+        .box > .heading h1 img {
+            margin-top: -7px;
+        }
+    </style>
+
+    <style>
+        .overlay {
+            height: 100%;
+            width: 100%;
+            display: none;
+            position: fixed;
+            z-index: 1;
+            top: 0;
+            left: 0;
+            background-color: rgb(0,0,0);
+            background-color: rgba(0,0,0, 0.9);
+        }
+
+        .overlay-content {
+            position: relative;
+            top: 25%;
+            width: 100%;
+            text-align: center;
+            margin-top: 30px;
+        }
+        .cedshopee-loading {
+            position: relative;
+            top: 25%;
+            width: auto;
+            text-align: center;
+            margin-top: 30px;
+        }
+        .overlay a {
+            padding: 8px;
+            text-decoration: none;
+            font-size: 36px;
+            color: #818181;
+            display: block;
+            transition: 0.3s;
+        }
+
+        .overlay .closebtn {
+            position: absolute;
+            top: 20px;
+            right: 45px;
+            font-size: 60px;
+        }
+
+        @media screen and (max-height: 250px) {
+            .overlay .closebtn {
+                font-size: 40px;
+                top: 15px;
+                right: 35px;
+            }
+        }
+    </style>
+    <div id="myNav" class="overlay">
+        <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+        <div class="overlay-content">
+            <img class="cedshopee-loading fa fa-spinner" style="margin-left:2px" src="view/image/shopee/cedshopee_loader.gif">
+        </div>
+    </div>
+    <script>
+        function openNav() {
+            document.getElementById("myNav").style.display = "block";
+        }
+
+        function closeNav() {
+            document.getElementById("myNav").style.display = "none";
+        }
+    </script>
+    {{ footer }}
