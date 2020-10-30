@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html dir="{{ direction }}" lang="{{ lang }}">
+<head>
+<meta charset="UTF-8" />
+<title>{{ title }}</title>
+<base href="{{ base }}" />
+<link href="view/javascript/bootstrap/css/bootstrap.css" rel="stylesheet" media="all" />
+<script type="text/javascript" src="view/javascript/jquery/jquery-2.1.1.min.js"></script>
+<script type="text/javascript" src="view/javascript/bootstrap/js/bootstrap.min.js"></script>
+<link href="view/javascript/font-awesome/css/font-awesome.min.css" type="text/css" rel="stylesheet" />
+<link type="text/css" href="view/stylesheet/stylesheet.css" rel="stylesheet" media="all" />
+</head>
+<body>
+<div class="container">
+  {% for order in orders %}
+  <div style="page-break-after: always;">
+    <div class="row">
+      <div class="col-sm-4">
+        <table class="table table-bordered">
+          <thead>
+            <tr>
+              <td class="text-center"><b>{{ column_order_date }}</b></td>
+              <td class="text-center"><b>{{ column_fulfilled_date }}</b></td>
+            </tr>
+            <tr>
+              <td class="text-center">{{ order.order_date }}</td>
+              <td class="text-center">{{ order.fulfill_date }}</td>
+            </tr>
+            <tr>
+              <td class="text-center"><b>{{ column_pickup }}</b></td>
+              <td class="text-center"><b>{{ column_delivery }}</b></td>
+            </tr>
+            <!-- <tr>
+              <td class="text-center" style="height: 60px"><b>LEX PH</b></td>
+              <td class="text-center" style="height: 60px"><b>LEX PH</b></td>
+            </tr> -->
+          </thead>
+        </table>
+      </div>
+      <div class="col-sm-8">
+        {% if order.qr_code %}
+          <img src="{{ order.qr_code }}"> 
+          <!-- <span style="float: right; font-size: 30px;line-height: 32px;font-weight: bold;">STA</span><br /> -->
+          <div style="padding-left: 5px;font-size: 13px;line-height: 14px;"><b>{{ column_consignee }}</b> : {{ order.consignee }}<br />
+          <b>{{ text_contact }}</b> : {{ order.telephone }} <br />
+          <b>{{ text_shipping_address }}</b> : {{ order.shipping_address }}</div> <br />
+        {% endif %}
+      </div>
+    </div>
+    <div class="row">
+      <b>{{ text_order_id }}</b> {{ order.order_id }}<br />
+      {{ order.barcode_order_id }} 
+      <span style="padding-left: 25px; font-size: 35px;line-height: 0px;font-weight: bold;">{{ order.route_code }}</span> 
+      <!-- <span style="float: right; font-size: 20px;line-height: 32px;font-weight: bold;">LUZ</span>       -->
+    </div>
+    <div class="row">
+      <div style="font-size: 13px;line-height: 14px;">
+      <b>{{ text_sold_by }}</b> : {{ order.seller_name }}<br />
+      <b>{{ text_seller_address }}</b> : {{ order.seller_address }} <br />
+      {% if order.seller_contact %}
+      <b>{{ text_seller_contact }}</b> : {{ order.seller_contact }} <br />
+      {% endif %}
+      </div>
+    </div>
+    <div class="row">
+      {% if order.cod_method %}
+      <span style="font-size: 20px;font-weight: 700;">COD: {{ order.cod }}</span>
+      {% endif %}
+      <span style="float: right;font-size: 18px;font-weight: 700;">{{ text_route_code }}: {{ order.route_code }}</span><br />
+      <center>{{ order.barcode_route_code }}</center><br />
+      <center>{{ order.barcode_tracking_number }}</center>
+      <span style="font-size: 14px;font-weight: 600;">{{ text_tracking_number }}: {{ order.tracking_number }}</span>
+    </div>
+    <div class="row">
+      <span style="font-size: 14px;font-weight: 600;">{{ text_declared_value}}: {{ order.cod }}</span>
+      <span style="float: right;font-size: 14px;font-weight: 600;">{{ text_origin }}: {{ order.origin }}</span>
+    </div>
+    <div class="row">
+      <table class="table table-bordered">
+        <thead>
+          <tr>
+            <td class="text-center"><b>{{ column_quantity }}</b></td>
+            <td class="text-center"><b>{{ column_product }}</b></td>
+          </tr>
+        </thead>
+        <tbody>
+          {% for product in order.product %}
+          <tr>
+            <td class="text-center">{{ product.quantity }}</td>
+            <td>{{ product.name }}
+              {% for option in product.option %}
+              <br />
+              &nbsp;<small> - {{ option.name }}: {{ option.value }}</small>
+              {% endfor %}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+  {% endfor %}
+<style type="text/css">
+  .container {
+      width: 520px;
+      padding-top: 3px;
+      padding-right: 18px;
+      padding-left: 18px;
+      border: 2px solid black;
+  }
+
+  .table {
+    font-size: 12px;
+  }
+
+  .table > thead > tr > th, .table > tbody > tr > th, .table > tfoot > tr > th, .table > thead > tr > td, .table > tbody > tr > td, .table > tfoot > tr > td {
+    padding: 1px;
+    line-height: 1;
+  }
+
+  .table-bordered > thead > tr > th, .table-bordered > thead > tr > td {
+    border-bottom-width: 1px;
+  }
+
+  .col-sm-4, .col-sm-8 {
+    position: none;
+    min-height: 0px;
+    padding-right: 0px;
+    padding-left: 0px;
+  }
+</style>
+</div>
+</body>
+</html>

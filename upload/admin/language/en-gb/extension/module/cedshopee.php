@@ -21,7 +21,12 @@ $_['tab_general']                   = 'General';
 $_['tab_api']                       = 'API';
 $_['tab_product']                   = 'Product';
 $_['tab_order']                     = 'Order';
+$_['tab_shipping_label']            = 'Shipping Label';
 $_['tab_cron']                      = 'Cron';
+
+$_['entry_seller_name']             = 'Seller Name';
+$_['entry_seller_add']              = 'Seller Address';
+$_['entry_seller_contact']          = 'Seller Contact';
 
 $_['text_edit']             		= 'Edit Shopee Setting';
 $_['text_module'] 					= 'Modules';

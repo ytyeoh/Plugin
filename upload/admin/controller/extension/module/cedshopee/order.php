@@ -240,6 +240,7 @@ class ControllerExtensionModuleCedshopeeOrder extends Controller
                     'view' => $this->url->link('extension/module/cedshopee/order/info', 'user_token=' . $this->session->data['user_token'] . '&order_id=' . $result['order_id'] . $url, 'SSL'),
                     'ship' => $this->url->link('extension/module/cedshopee/order/ship', 'user_token=' . $this->session->data['user_token'] . '&order_id=' . $result['order_id'] . $url, 'SSL'),
                     'selected' => isset($this->request->post['selected']) && in_array($result['order_id'], $this->request->post['selected']),
+                    'shipping_label'=> $this->url->link('extension/module/cedshopee/shipping_label', 'user_token=' . $this->session->data['user_token'] . '&order_id=' . $result['order_id'] . $url, 'SSL'),
                 );
             }
         }

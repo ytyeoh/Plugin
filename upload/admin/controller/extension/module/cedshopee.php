@@ -79,6 +79,12 @@ class ControllerExtensionModuleCedshopee extends Controller {
             $data['entry_' . $order_tab] = $this->language->get('entry_' . $order_tab);
         }
 
+        $shipping_tabs = array('seller_name', 'seller_add', 'seller_contact');
+        foreach ($shipping_tabs as $shipping_tab)
+        {
+            $data['entry_' . $shipping_tab] = $this->language->get('entry_' . $shipping_tab);
+        }
+
         // Help Tab
         $help_tabs = array('debug', 'order_email', 'validate', 'update_all', 'update_price', 'update_inventry', 'inventry_choice', 'price_choice', 'variable_price');
         foreach ($help_tabs as $help_tab)
@@ -182,6 +188,18 @@ class ControllerExtensionModuleCedshopee extends Controller {
                 $data['cedshopee_' . $order_tab] = $this->config->get('cedshopee_' . $order_tab);
             } else {
                 $data['cedshopee_' . $order_tab] = '';
+            }
+        }
+
+        // Shipping Setting
+        foreach ($shipping_tabs as $shipping_tab)
+        {
+            if (isset($this->request->post['cedshopee_' . $shipping_tab])) {
+                $data['cedshopee_' . $shipping_tab] = $this->request->post['cedshopee_' . $shipping_tab];
+            } else if ($this->config->get('cedshopee_' . $shipping_tab)) {
+                $data['cedshopee_' . $shipping_tab] = $this->config->get('cedshopee_' . $shipping_tab);
+            } else {
+                $data['cedshopee_' . $shipping_tab] = '';
             }
         }
 
@@ -289,6 +307,9 @@ class ControllerExtensionModuleCedshopee extends Controller {
 
         $this->model_user_user_group->addPermission($this->user->getGroupId(), 'access', 'extension/module/cedshopee/discount');
         $this->model_user_user_group->addPermission($this->user->getGroupId(), 'modify', 'extension/module/cedshopee/discount');
+
+        $this->model_user_user_group->addPermission($this->user->getGroupId(), 'access', 'extension/module/cedshopee/shipping_label');
+        $this->model_user_user_group->addPermission($this->user->getGroupId(), 'modify', 'extension/module/cedshopee/shipping_label');
 
         $this->model_user_user_group->addPermission($this->user->getGroupId(), 'access', 'extension/module/cedshopee/column_left');
         $this->model_user_user_group->addPermission($this->user->getGroupId(), 'modify', 'extension/module/cedshopee/column_left');
