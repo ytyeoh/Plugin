@@ -511,8 +511,8 @@ class Cedshopee
                         else
                             $validation_error[$itemCount] = 'Product ID '.$product_id.'Name is required Field';
 
-                        if(strlen($productToUpload['name']) > 20){
-                          $productToUpload['name'] = substr($productToUpload['name'], 0, 20);
+                        if(strlen($productToUpload['name']) > 120){
+                          $productToUpload['name'] = substr($productToUpload['name'], 0, 120);
                         }
 
                         if(isset($product_info['description']) &&  $product_info['description'])
