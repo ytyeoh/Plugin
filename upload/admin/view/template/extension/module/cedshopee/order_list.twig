@@ -204,7 +204,13 @@
                   <td class="left">{{ order['date_modified'] }}</td>
                   <td class="left">
                     <a href="{{ order['view'] }}" data-toggle="tooltip" title="{{ button_edit }}" class="btn btn-info"><i class="fa fa-eye"></i></a>
-                    <a onclick="shippingLabel('{{ order['order_id'] }}');" class="btn btn-info"><i class="fa fa-print"></i> Shipping Label</a>
+                    {% if order['shipping_label'] %}
+                      {% if order['shipping_label_status'] %}
+                      <a onclick="updateShipStatus('{{ order['order_id'] }}');" href="{{ order['shipping_label'] }}" target="_blank" class="btn btn-info"><i class="fa fa-print"></i> Shipping Label</a>
+                      {% else %}
+                      <a onclick="updateShipStatus('{{ order['order_id'] }}');" href="{{ order['shipping_label'] }}" target="_blank" class="btn btn-default"><i class="fa fa-print"></i> Shipping Label</a>
+                      {% endif %}
+                    {% endif %}
                   </td>
                 </tr>
                 {% endfor %} 
@@ -291,12 +297,13 @@ function shippingLabel(order_id){
 
 }
 
-function shippingLabelView(order_id){
-  modal.style.display = "none";
-  tracking_no = $("#input-tracking_id").val();
-  route_code = $("#input-route_code").val();
-  url = 'index.php?route=extension/module/cedshopee/shipping_label&user_token={{ user_token }}&order_id='+order_id+'&tracking_no='+tracking_no+'&route_code='+route_code;
-  window.open(url,'_blank');
+function updateShipStatus(order_id){
+  url = 'index.php?route=extension/module/cedshopee/order/updateShipStatus&user_token={{ user_token }}&order_id='+order_id;
+  $.ajax({
+      url: url,
+      dataType: 'json',
+
+  });
 }
 
 $("#delete_button").click(function(event){

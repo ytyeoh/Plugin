@@ -22,6 +22,7 @@ class ControllerExtensionModuleCedshopeeOrder extends Controller
 
     public function index()
     {
+
         $this->load->language('extension/module/cedshopee/order');
         $this->document->setTitle($this->language->get('heading_title'));
         $this->getList();
@@ -40,7 +41,7 @@ class ControllerExtensionModuleCedshopeeOrder extends Controller
             $cedshopee->log($url);
             $createdTimeTo = date('Y-m-d h:i:s a');
             $params = array(
-                'order_status' => 'READY_TO_SHIP',  
+                'order_status' => 'ALL',  
                 'create_time_to' => strtotime($createdTimeTo)
                 );       
             $order_data = $cedshopee->fetchOrder($url, $params);
@@ -77,7 +78,7 @@ class ControllerExtensionModuleCedshopeeOrder extends Controller
         } else {
             $this->error['warning'] = 'Shopee Module is disabled';
         }
-        $this->getList();
+        $this->response->redirect($this->url->link('extension/module/cedshopee/order', 'user_token=' . $this->session->data['user_token'], 'SSL'));
     }
 
     protected function getList()
@@ -220,6 +221,7 @@ class ControllerExtensionModuleCedshopeeOrder extends Controller
             'start' => ($page - 1) * $this->config->get('config_limit_admin'),
             'limit' => $this->config->get('config_limit_admin')
         );
+
         $this->load->model('extension/module/cedshopee/order');
         $order_total = $this->model_extension_module_cedshopee_order->getTotalOrders($filter_data);
 
@@ -240,7 +242,8 @@ class ControllerExtensionModuleCedshopeeOrder extends Controller
                     'view' => $this->url->link('extension/module/cedshopee/order/info', 'user_token=' . $this->session->data['user_token'] . '&order_id=' . $result['order_id'] . $url, 'SSL'),
                     'ship' => $this->url->link('extension/module/cedshopee/order/ship', 'user_token=' . $this->session->data['user_token'] . '&order_id=' . $result['order_id'] . $url, 'SSL'),
                     'selected' => isset($this->request->post['selected']) && in_array($result['order_id'], $this->request->post['selected']),
-                    'shipping_label'=> $this->url->link('extension/module/cedshopee/shipping_label', 'user_token=' . $this->session->data['user_token'] . '&order_id=' . $result['order_id'] . $url, 'SSL'),
+                    'shipping_label_status'=> $result['shipment_data'],
+                    'shipping_label'=> $result['shipment_response_data'] ? json_decode($result['shipment_response_data'],true) : 0,
                 );
             }
         }
@@ -1263,5 +1266,12 @@ class ControllerExtensionModuleCedshopeeOrder extends Controller
         }
         $this->response->addHeader('Content-Type: application/json');
         $this->response->setOutput(json_encode($json));
+    }
+
+    public function updateShipStatus() {
+
+        if(isset($this->request->get['order_id']) && $this->request->get['order_id']) {
+            $this->db->query("UPDATE `" . DB_PREFIX . "cedshopee_order` SET shipment_data = null WHERE opencart_order_id = '" . (int)$this->request->get['order_id'] . "'");
+        }
     }
 }

@@ -27,19 +27,28 @@ class ControllerExtensionModuleCedshopeeShippingLabel extends Controller
 			$order_id = $this->request->get['order_id'];
 		}
 
-		$sql = $this->db->query("SELECT order_data FROM `" . DB_PREFIX . "cedshopee_order` WHERE opencart_order_id = '" . $order_id . "'");
+		$sql = $this->db->query("SELECT shipment_data, order_data FROM `" . DB_PREFIX . "cedshopee_order` WHERE opencart_order_id = '" . $order_id . "'");
 
-		if($sql->num_rows) {
+		if($sql->row['shipment_data']) {
+			// $shopee_shipping_info = json_decode($sql->row['shipment_data']);
 			$shopee_order_info = json_decode($sql->row['order_data'],true);
 
-			if(isset($shopee_order_info['tracking_no']) && $shopee_order_info['tracking_no']){
-				$tracking_number = $shopee_order_info['tracking_no'];
+			$shopee_shipping_info = Array
+		        (
+		            
+		            'cod' => 0,
+		            'shopee_tracking_no' => 'MY203425934633J',
+		            'tracking_no' => '6209140378',
+		        );
+
+			if(isset($shopee_shipping_info['tracking_no']) && $shopee_shipping_info['tracking_no']){
+				$tracking_number = $shopee_shipping_info['tracking_no'];
 			}elseif(isset($this->request->get['tracking_no']) && $this->request->get['tracking_no']){
 				$tracking_number = $this->request->get['tracking_no'];
 			}
 
-			if(isset($tracking_number) && isset($this->request->get['route_code']) && $this->request->get['route_code']) {
-				$route_code = $this->request->get['route_code'];
+			if(isset($tracking_number)) {
+				$route_code = $this->request->get['route_code'] ? '' : '';
 				// $sql = array(
 				// 	'create_time' => 1570205718,
 				// 	'ship_by_date' => 1603857646,
@@ -89,8 +98,12 @@ class ControllerExtensionModuleCedshopeeShippingLabel extends Controller
 				// bar code gernator
 				
 				$generator = new Picqer\Barcode\BarcodeGeneratorSVG();
-				$barcode_order_id = $generator->getBarcode('228668800120001', $generator::TYPE_CODE_128, 1, 30);
-				$barcode_route_code = $generator->getBarcode($route_code, $generator::TYPE_CODE_128, 3, 140);
+				$barcode_order_id = $generator->getBarcode($order_id, $generator::TYPE_CODE_128, 1, 30);
+				if($route_code){
+					$barcode_route_code = $generator->getBarcode($route_code, $generator::TYPE_CODE_128, 3, 140);
+				}else{
+					$barcode_route_code = '';
+				}
 				$barcode_tracking_number = $generator->getBarcode($tracking_number, $generator::TYPE_CODE_128, 3, 140);
 				// die;
 				$this->load->language('extension/module/cedshopee/shipping_label');
@@ -248,7 +261,7 @@ class ControllerExtensionModuleCedshopeeShippingLabel extends Controller
 						'order_id'	       => $order_id,
 						'order_date'       => date("j M", $shopee_order_info['create_time']),
 						'fulfill_date'     => date("j M", $shopee_order_info['ship_by_date']),
-						'cod_method'	   => $shopee_order_info['cod'],
+						'cod_method'	   => $shopee_shipping_info['cod'],
 						'cod'			   => $shopee_order_info['currency'].' '.$shopee_order_info['total_amount'],
 						'consignee'		   => $order_info['firstname'].' '.$order_info['lastname'],
 						'origin'		   => $shopee_order_info['country'],

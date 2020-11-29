@@ -511,9 +511,9 @@ class Cedshopee
                         else
                             $validation_error[$itemCount] = 'Product ID '.$product_id.'Name is required Field';
 
-                        if(strlen($productToUpload['name']) > 120){
-                          $productToUpload['name'] = substr($productToUpload['name'], 0, 120);
-                        }
+                        // if(strlen($productToUpload['name']) > 20){
+                        //   $productToUpload['name'] = substr($productToUpload['name'], 0, 20);
+                        // }
 
                         if(isset($product_info['description']) &&  $product_info['description'])
                         {
@@ -1619,11 +1619,11 @@ class Cedshopee
         if(!isset($params['pagination_offset']))
             $params['pagination_offset'] = $pagination_offset;
 
-        $params['create_time_from'] = date('Y-m-d h:i:s a', strtotime("-1 days")); // , strtotime("-2 hours")
+        $params['create_time_from'] = date('Y-m-d h:i:s a', strtotime("-15 days")); // , strtotime("-2 hours")
         $params['create_time_from'] = strtotime($params['create_time_from']);
 
         $response = $this->postRequest($url, $params);
-//echo '<pre>'; print_r($response); die;
+// echo '<pre>'; print_r($response); die;
         try {
             if (!empty($response))
             {
@@ -1731,14 +1731,35 @@ class Cedshopee
 
     public function isPurchaseOrderIdExist($shopee_order_id = 0)
     {
+      
         $isExist = false;
         if ($shopee_order_id) {
             $sql = "SELECT `id` FROM `" . DB_PREFIX . "cedshopee_order` WHERE `shopee_order_id` = '" . $shopee_order_id . "'";
             $result = $this->db->query($sql);
             if ($result && $result->num_rows) {
                 $isExist = true;
+                $sql = $this->db->query("SELECT shipment_response_data FROM `" . DB_PREFIX . "cedshopee_order` WHERE `shopee_order_id` = '" . $shopee_order_id . "'");
+                if(empty($sql->row[['shipment_response_data']])){
+                  $url = 'logistics/airway_bill/get_mass';
+                  $params = array('ordersn_list' => (array)$shopee_order_id);
+                  $order_data = $this->postRequest($url, $params);
+
+                  // $order_data = json_decode('{"result":{"total_count":1,"errors":[],"airway_bills":[{"ordersn":"201030NQCADYKF","airway_bill":"https:\/\/partner.shopeemobile.com\/api\/v1\/logistics\/waybill_print_v3?token=xf0%2F4FWj42O3FG5XYZBk3U1fCge%2FRsyZ4r7T0lRxnsAdi9Gnhqd1aEuJmnHxiCIDv%2F1kOyUGB20FAbZ30NjmpMyDO1OH2rp4oRDBa9jps%2FhJuGHtJgHgmNEQCE0jXIheeka9%2BSaRnGOSTBp4hluqNDWGWSsmElEBHFmIdqdEriM%3D"}]},"request_id":"65cf2dc5fe68ed10eeb6ab0a64e1e0c0"}', true);
+                  
+
+                  if(isset($order_data['result']['airway_bills'][0]) && !empty($order_data['result']['airway_bills'][0])) {
+                    if($order_data['result']['airway_bills'][0]['ordersn'] == $shopee_order_id) {
+                      
+                      $this->db->query("UPDATE `" . DB_PREFIX . "cedshopee_order` SET shipment_data =  1, shipment_response_data =  '".$this->db->escape(json_encode($order_data['result']['airway_bills'][0]['airway_bill']))."' WHERE `shopee_order_id` = '" . $shopee_order_id . "'");
+                    }else{
+
+                      $this->db->query("UPDATE `" . DB_PREFIX . "cedshopee_order` SET shipment_data = 1, shipment_response_data =  '".$this->db->escape(json_encode($order_data['result']['airway_bills'][0]['airway_bill']))."' WHERE `shopee_order_id` = '" . $order_data['result']['airway_bills'][0]['ordersn'] . "'");
+                    }
+                  }
+                }
             }
         }
+
         return $isExist;
     }
 
@@ -2272,7 +2293,7 @@ class Cedshopee
                     `order_data` = '" . $this->db->escape(json_encode($data['shopee_data'])) . "',
                     `status` = '". $data['order_status'] ."',
                     `shopee_order_id` = '" . $data['shopee_order_id'] . "',
-                    `shipment_data` = '" . $this->db->escape(json_encode($data['shipment'])) . "'
+                    `shipment_data` = ''
                 ");
 
                     // Products
