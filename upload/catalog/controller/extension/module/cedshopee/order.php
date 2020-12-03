@@ -26,9 +26,9 @@ class ControllerExtensionModuleCedshopeeOrder extends Controller
         if ($status) {
             $url = 'orders/get';
             $cedshopee->log($url);
-            $createdTimeTo = date('Y-m-d h:i:s a', strtotime("-1 days"));
+            $createdTimeTo = date('Y-m-d h:i:s a');
             $params = array(
-                'order_status' => 'ALL',  
+                'order_status' => 'READY_TO_SHIP',  
                 'create_time_to' => strtotime($createdTimeTo)
                 );      
             $order_data = $cedshopee->fetchOrder($url, $params);
