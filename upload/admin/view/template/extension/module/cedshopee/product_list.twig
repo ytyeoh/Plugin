@@ -93,7 +93,7 @@
                             </div>
                             <div class="form-group">
                                 <label class="control-label" for="input-status">{{ column_profile_name }}</label>
-                                <select name="filter_profile_name" id="input-profile_name" class="form-control">
+                                <select name="profile_filter" id="input-profile_name" class="form-control">
                                     <option value=""></option>
                                     {% for profile in profiles %}
                                     {% if (profile_filter is not empty and profile_filter == profile['id']) %}
@@ -276,10 +276,10 @@
             url += '&filter_model=' + encodeURIComponent(filter_model);
         }
 
-        var profile_name = $('select[name="filter_profile_name"]').val();
+        var profile_filter = $('select[name="profile_filter"]').val();
 
-        if (profile_name) {
-            url += '&profile_name='+encodeURIComponent(profile_name);
+        if (profile_filter) {
+            url += '&profile_filter='+encodeURIComponent(profile_filter);
         }
 
         var filter_price = $('input[name=\'filter_price\']').val();
