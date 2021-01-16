@@ -216,12 +216,10 @@ class ModelExtensionModuleCedshopeeProfile extends Model {
 //echo '<pre>'; print_r($result); die;
 		if($result && $result->num_rows) {
 			$products =  array_chunk( $result->rows, 1000);
-			$delete = $this->db->query("DELETE * FROM `".DB_PREFIX."cedshopee_profile_products` WHERE `product_id` NOT IN '". $products ."' ");
 			foreach ($products as $key => $value) {
 				foreach ($result->rows as $key => $product)
 				{
 					$sql = $this->db->query("SELECT * FROM `".DB_PREFIX."cedshopee_profile_products` WHERE `product_id` = '". $product['product_id'] ."' ");
-
 					if($sql->num_rows == 0)
 					{
 						$this->db->query("INSERT INTO `".DB_PREFIX."cedshopee_profile_products` SET `product_id` = '". $product['product_id'] ."' ,`shopee_profile_id` = '". $profile_id ."' ");

@@ -217,7 +217,7 @@ class ControllerExtensionModuleCedshopeeProduct extends Controller
                 'special' => $special,
                 'image' => $image,
                 'profile_name' => $result['title'],
-                'shopee_id' => isset($result['shopee_id']) ? $result['shopee_id'] : 0,
+                'shopee_id' => isset($result['shopee_item_id']) ? $result['shopee_item_id'] : 0,
                 'quantity' => ($cedshopee_inventry_choice == 2) ? $result['wquantity'] : $result['quantity'],
                 'status' => ($result['status'] ? $this->language->get('text_enabled') : $this->language->get('text_disabled')),
                 'cedshopee_status' => ($result['shopee_status']) ? $result['shopee_status'] : 'Not Uploaded',
@@ -829,8 +829,8 @@ class ControllerExtensionModuleCedshopeeProduct extends Controller
     {
         $json = array();
         if (isset($this->request->post['product_id']) && $this->request->post['product_id']) {
-            $this->load->model('extension/module/cedshopee/product');
-            $shopee_item_id = $this->model_extension_module_cedshopee_product->getShopeeItemId($this->request->post['product_id']);
+            $this->load->model('cedshopee/product');
+            $shopee_item_id = $this->model_cedshopee_product->getShopeeItemId($this->request->post['product_id']);
             if($shopee_item_id) {
                 $this->load->library('cedshopee');
                 $cedshopee = Cedshopee::getInstance($this->registry);

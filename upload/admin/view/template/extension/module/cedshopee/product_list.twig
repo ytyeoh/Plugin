@@ -449,7 +449,7 @@
     function viewDetails(product_id) {
 
         modal.style.display = "block";
-        var url = 'index.php?route=extension/module/cedshopee/product/viewDetails&user_token={{ user_token }}';
+        var url = 'index.php?route=cedshopee/product/viewDetails&user_token={{ user_token }}';
         $.ajax({
             type: "POST",
             url: url,

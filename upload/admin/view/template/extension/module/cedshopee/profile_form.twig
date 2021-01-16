@@ -516,7 +516,9 @@
 
     function getBrand(data)
     {
+        $(".dropdown-menu").hide();
         if (data.value.length > 0) {
+            
             var id = data.getAttribute('data-id');
             $('input[name="profile_attribute_mapping['+id+'][default_values]"]').autocomplete({
                 delay: 500,
@@ -527,6 +529,7 @@
                         dataType: 'json',
                         success: function (json) {
                             response($.map(json, function (item) {
+                                // console.log(item);
                                 return {
                                     label: item,
                                     value: item
@@ -538,10 +541,12 @@
                 select: function (item) {
                     $('input[name="profile_attribute_mapping['+id+'][default_values]"]').val(item['label']);
                     $('input[name="profile_attribute_mapping['+id+'][default_value_id]"]').val(item['label']);
+                    return false;
                 }
             });
         }
     }
+    
     function getOptions(data)
     {
         if (data.value.length > 0) {
