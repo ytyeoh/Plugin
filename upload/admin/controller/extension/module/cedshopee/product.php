@@ -829,8 +829,8 @@ class ControllerExtensionModuleCedshopeeProduct extends Controller
     {
         $json = array();
         if (isset($this->request->post['product_id']) && $this->request->post['product_id']) {
-            $this->load->model('cedshopee/product');
-            $shopee_item_id = $this->model_cedshopee_product->getShopeeItemId($this->request->post['product_id']);
+            $this->load->model('extension/module/cedshopee/product');
+            $shopee_item_id = $this->model_extension_module_cedshopee_product->getShopeeItemId($this->request->post['product_id']);
             if($shopee_item_id) {
                 $this->load->library('cedshopee');
                 $cedshopee = Cedshopee::getInstance($this->registry);

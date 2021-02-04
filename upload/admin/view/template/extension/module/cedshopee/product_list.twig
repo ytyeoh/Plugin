@@ -388,7 +388,7 @@
             url: url,
             data: {'selected': chunk_array[len]},
             success: function (response) {
-                console.log(response); 
+                
                 if (response) {
                     var obj = response;
                     if (obj.success) {
@@ -400,7 +400,7 @@
                             sendUploadRequest(chunk_array, url);
                         }
                     } else {
-                        console.log(obj.message);
+                        
                         var errormessage = obj.message;
                         if (errormessage) {
                             if (errormessage instanceof Array) {
@@ -449,7 +449,7 @@
     function viewDetails(product_id) {
 
         modal.style.display = "block";
-        var url = 'index.php?route=cedshopee/product/viewDetails&user_token={{ user_token }}';
+        var url = 'index.php?route=extension/module/cedshopee/product/viewDetails&user_token={{ user_token }}';
         $.ajax({
             type: "POST",
             url: url,
