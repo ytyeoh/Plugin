@@ -680,8 +680,14 @@ class Cedshopee
                                             }
                                         }
                                     }
+                                    $product_images = $productToUpload['images'];
                                     unset($productToUpload['images']);
                                     $response = $this->postRequest('item/update', $productToUpload);
+                                    if (isset($response['item_id']) && !empty($response['item_id'])) {
+                                        if (isset($product_images) && !empty($product_images)) {
+                                            $this->updateitemimages($product_images, $response['item_id']);
+                                        }
+                                    }
                                 } else {
                                     $variations = array();
                                     $tier_variation = array();
@@ -806,6 +812,20 @@ class Cedshopee
         $response = array('error' => implode(', ', $error_message), 'success' => implode(', ', $success_message));
 
         return $response;
+    }
+
+    public function updateitemimages($product_images, $item_id){
+        $images = array();
+        foreach($product_images as $product_image){
+            $images[] = $product_image['url'];
+        }
+        $params = array(
+            'item_id' => (int)$item_id,
+            'images' => (array)$images
+        );
+        $result = $this->postRequest('item/img/update', $params);
+        return true;
+
     }
 
     public function validateProduct($productToUpload, $category){
@@ -1553,15 +1573,34 @@ class Cedshopee
 
             $productImages = array();
             $additionalAssets = array();
-            $query = $this->db->query("SELECT `image` FROM " . DB_PREFIX . "product_image WHERE product_id = '" . (int)$product_id . "' ORDER BY sort_order ASC");
-            if ($query && $query->num_rows) {
-                $productImages = $query->rows;
-            }
-
+            
             if (isset($product['image'])) {
                 $productImages[] = array('image' => (string) $product['image']);
             }
-
+            
+            $query = $this->db->query("SELECT `image` FROM " . DB_PREFIX . "product_image WHERE product_id = '" . (int)$product_id . "' ORDER BY sort_order ASC");
+            if ($query && $query->num_rows) {
+                $addproductImages = $query->rows;
+            }
+            
+            $i = 1;
+            foreach($addproductImages as $addproimg){
+                $productImages[$i]['image'] = $addproimg['image'];
+                $i++;
+            }
+            
+            // echo '<pre>'; print_r($productImages); die; 
+            
+            // $query = $this->db->query("SELECT `image` FROM " . DB_PREFIX . "product_image WHERE product_id = '" . (int)$product_id . "' ORDER BY sort_order ASC");
+            // if ($query && $query->num_rows) {
+            //     $productImages = $query->rows;
+            // }
+            
+            // if (isset($product['image'])) {
+            //     $productImages[] = array('image' => (string) $product['image']);
+            // }
+            
+            // echo '<pre>'; print_r($productImages); die; 
             if (!empty($productImages)) {
                 foreach ($productImages as $product_image) {
                     if (is_file(DIR_IMAGE . $product_image['image'])) {
@@ -1572,6 +1611,7 @@ class Cedshopee
                     }
                 }
             }
+            
             return $additionalAssets;
         }
     }
