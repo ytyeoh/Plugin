@@ -240,6 +240,21 @@
                             </div>
 
                             <div class="form-group">
+                                <label class="col-sm-4 control-label" for="input-order_shipping_label">{{ entry_order_shipping_label }}</label>
+                                <div class="col-sm-4">
+                                    <select name="cedshopee_order_shipping_label" id="input-order_shipping_label" class="form-control">
+                                        {% if (cedshopee_order_shipping_label) %}
+                                            <option value="1" selected="selected">{{ text_enabled }}</option>
+                                            <option value="0">{{ text_disabled }}</option>
+                                        {% else %}
+                                            <option value="1">{{ text_enabled }}</option>
+                                            <option value="0" selected="selected">{{ text_disabled }}</option>
+                                        {% endif %}
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
                                 <label class="col-sm-4 control-label" for="input-auto_order">{{ entry_auto_order }}</label>
                                 <div class="col-sm-4">
                                     <select name="cedshopee_auto_order" id="input-auto_order" class="form-control">

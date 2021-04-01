@@ -54,6 +54,7 @@ $_['entry_update_all']				= 'Update Whole Info';
 $_['entry_variable_price']  		= 'Variant Amount';
 
 $_['entry_order_email'] 			= 'Email For Shopee Orders';
+$_['entry_order_shipping_label'] 	= 'Print Shipping Label at Order Fetch';
 $_['entry_auto_order'] 				= 'Auto Reject Failed Order';
 
 $_['entry_order_import'] 			= 'Order status while import order';

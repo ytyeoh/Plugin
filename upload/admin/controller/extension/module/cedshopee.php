@@ -73,7 +73,7 @@ class ControllerExtensionModuleCedshopee extends Controller {
         }
 
         // Order Tab
-        $order_tabs = array('order_email', 'auto_order', 'order_import', 'order_cancel', 'order_ship', 'order_carrier', 'order_payment');
+        $order_tabs = array('order_email', 'order_shipping_label', 'auto_order', 'order_import', 'order_cancel', 'order_ship', 'order_carrier', 'order_payment');
         foreach ($order_tabs as $order_tab)
         {
             $data['entry_' . $order_tab] = $this->language->get('entry_' . $order_tab);

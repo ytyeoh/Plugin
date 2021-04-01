@@ -823,7 +823,7 @@ class Cedshopee
             'item_id' => (int)$item_id,
             'images' => (array)$images
         );
-        $result = $this->postRequest('item/img/update', $params);
+        $result = $this->postRequest('item/update', $params);
         return true;
 
     }
@@ -1708,56 +1708,60 @@ class Cedshopee
                                                 $this->log(json_encode($orderData), '6', true);
                                                 if(isset($orderData) && is_array($orderData) && !empty($orderData)) {
                                                     $order_ids[] = $this->createOrder($orderData);
-                                                    $sql = $this->db->query("SELECT shipment_response_data FROM `" . DB_PREFIX . "cedshopee_order` WHERE `shopee_order_id` = '" . $order_data['ordersn'] . "'");
-                                                    
-                                                    if(empty($sql->row['shipment_response_data'])){
+
+                                                    $enable_shipping_label_printing = $this->config->get('cedshopee_order_shipping_label');
+                                                    if(isset($enable_shipping_label_printing) && !empty($enable_shipping_label_printing)){
+                                                        $sql = $this->db->query("SELECT shipment_response_data FROM `" . DB_PREFIX . "cedshopee_order` WHERE `shopee_order_id` = '" . $order_data['ordersn'] . "'");
                                                         
-                                                        $url = 'logistics/init_info/get';
-                                                        $params = array('ordersn' => $order_data['ordersn']);
-                                                        $logistics_init_info = $this->postRequest($url, $params);
-                                                        
-                                                        if(!empty($logistics_init_info['dropoff']) && !empty($logistics_init_info['pickup'])){
-                                                            // foreach($logistics_init_info['pickup']['address_list'] as $key => $address_list){
-                                                            //     foreach($address_list['time_slot_list'] as $time_slot_list){
-                                                            //         $pickup = array(
-                                                            //             'address_id' => $address_list['address_id'],
-                                                            //             'pickup_time_id' => $time_slot_list['pickup_time_id'],
-                                                            //         );
-                                                            //     }
-                                                            // }
-                                                            // $url = 'logistics/init';
-                                                            // $params = array('ordersn' => $shopee_order_id,
-                                                            //                 'pickup' => $pickup,
-                                                            //                 'dropoff'=> 
-                                                            //             ); 
-                                                            // $logistics_init = $this->postRequest($url, $params);
-                                                        }elseif(empty($logistics_init_info['dropoff']) && !empty($logistics_init_info['pickup'])){
-                                                            foreach($logistics_init_info['pickup']['address_list'] as $key => $address_list){
-                                                                foreach($address_list['time_slot_list'] as $time_slot_list){
-                                                                    $pickup = array(
-                                                                        'address_id' => $address_list['address_id'],
-                                                                        'pickup_time_id' => $time_slot_list['pickup_time_id'],
-                                                                    );
-                                                                }
-                                                            }
-                                                            $url = 'logistics/init';
-                                                            $params = array('ordersn' => $order_data['ordersn'],
-                                                                            'pickup' => $pickup,
-                                                                        ); 
-                                                            $logistics_init = $this->postRequest($url, $params);
-                                                        }
-                                    
-                                                        $url = 'logistics/airway_bill/get_mass';
-                                                        $params = array('ordersn_list' => (array)$order_data['ordersn']);
-                                                        $bill_data = $this->postRequest($url, $params);
-                                                        
-                                                        if(isset($bill_data['result']['airway_bills'][0]) && !empty($bill_data['result']['airway_bills'][0])) {
-                                                            if($bill_data['result']['airway_bills'][0]['ordersn'] == $order_data['ordersn']) {
-                                                              
-                                                              $this->db->query("UPDATE `" . DB_PREFIX . "cedshopee_order` SET shipment_data =  1, shipment_response_data =  '".$this->db->escape(json_encode($bill_data['result']['airway_bills'][0]['airway_bill']))."' WHERE `shopee_order_id` = '" . $order_data['ordersn'] . "'");
-                                                            }else{
+                                                        if(empty($sql->row['shipment_response_data'])){
                                                             
-                                                              $this->db->query("UPDATE `" . DB_PREFIX . "cedshopee_order` SET shipment_data = 1, shipment_response_data =  '".$this->db->escape(json_encode($bill_data['result']['airway_bills'][0]['airway_bill']))."' WHERE `shopee_order_id` = '" . $bill_data['result']['airway_bills'][0]['ordersn'] . "'");
+                                                            $url = 'logistics/init_info/get';
+                                                            $params = array('ordersn' => $order_data['ordersn']);
+                                                            $logistics_init_info = $this->postRequest($url, $params);
+                                                            
+                                                            if(!empty($logistics_init_info['dropoff']) && !empty($logistics_init_info['pickup'])){
+                                                                // foreach($logistics_init_info['pickup']['address_list'] as $key => $address_list){
+                                                                //     foreach($address_list['time_slot_list'] as $time_slot_list){
+                                                                //         $pickup = array(
+                                                                //             'address_id' => $address_list['address_id'],
+                                                                //             'pickup_time_id' => $time_slot_list['pickup_time_id'],
+                                                                //         );
+                                                                //     }
+                                                                // }
+                                                                // $url = 'logistics/init';
+                                                                // $params = array('ordersn' => $shopee_order_id,
+                                                                //                 'pickup' => $pickup,
+                                                                //                 'dropoff'=> 
+                                                                //             ); 
+                                                                // $logistics_init = $this->postRequest($url, $params);
+                                                            }elseif(empty($logistics_init_info['dropoff']) && !empty($logistics_init_info['pickup'])){
+                                                                foreach($logistics_init_info['pickup']['address_list'] as $key => $address_list){
+                                                                    foreach($address_list['time_slot_list'] as $time_slot_list){
+                                                                        $pickup = array(
+                                                                            'address_id' => $address_list['address_id'],
+                                                                            'pickup_time_id' => $time_slot_list['pickup_time_id'],
+                                                                        );
+                                                                    }
+                                                                }
+                                                                $url = 'logistics/init';
+                                                                $params = array('ordersn' => $order_data['ordersn'],
+                                                                                'pickup' => $pickup,
+                                                                            ); 
+                                                                $logistics_init = $this->postRequest($url, $params);
+                                                            }
+                                        
+                                                            $url = 'logistics/airway_bill/get_mass';
+                                                            $params = array('ordersn_list' => (array)$order_data['ordersn']);
+                                                            $bill_data = $this->postRequest($url, $params);
+                                                            
+                                                            if(isset($bill_data['result']['airway_bills'][0]) && !empty($bill_data['result']['airway_bills'][0])) {
+                                                                if($bill_data['result']['airway_bills'][0]['ordersn'] == $order_data['ordersn']) {
+                                                                
+                                                                $this->db->query("UPDATE `" . DB_PREFIX . "cedshopee_order` SET shipment_data =  1, shipment_response_data =  '".$this->db->escape(json_encode($bill_data['result']['airway_bills'][0]['airway_bill']))."' WHERE `shopee_order_id` = '" . $order_data['ordersn'] . "'");
+                                                                }else{
+                                                                
+                                                                $this->db->query("UPDATE `" . DB_PREFIX . "cedshopee_order` SET shipment_data = 1, shipment_response_data =  '".$this->db->escape(json_encode($bill_data['result']['airway_bills'][0]['airway_bill']))."' WHERE `shopee_order_id` = '" . $bill_data['result']['airway_bills'][0]['ordersn'] . "'");
+                                                                }
                                                             }
                                                         }
                                                     }
