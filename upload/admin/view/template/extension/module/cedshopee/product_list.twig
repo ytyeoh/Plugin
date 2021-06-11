@@ -93,7 +93,7 @@
                             </div>
                             <div class="form-group">
                                 <label class="control-label" for="input-status">{{ column_profile_name }}</label>
-                                <select name="filter_profile_name" id="input-profile_name" class="form-control">
+                                <select name="profile_filter" id="input-profile_name" class="form-control">
                                     <option value=""></option>
                                     {% for profile in profiles %}
                                     {% if (profile_filter is not empty and profile_filter == profile['id']) %}
@@ -276,10 +276,10 @@
             url += '&filter_model=' + encodeURIComponent(filter_model);
         }
 
-        var profile_name = $('select[name="filter_profile_name"]').val();
+        var profile_filter = $('select[name="profile_filter"]').val();
 
-        if (profile_name) {
-            url += '&profile_name='+encodeURIComponent(profile_name);
+        if (profile_filter) {
+            url += '&profile_filter='+encodeURIComponent(profile_filter);
         }
 
         var filter_price = $('input[name=\'filter_price\']').val();
@@ -388,7 +388,7 @@
             url: url,
             data: {'selected': chunk_array[len]},
             success: function (response) {
-                console.log(response); 
+                
                 if (response) {
                     var obj = response;
                     if (obj.success) {
@@ -400,7 +400,7 @@
                             sendUploadRequest(chunk_array, url);
                         }
                     } else {
-                        console.log(obj.message);
+                        
                         var errormessage = obj.message;
                         if (errormessage) {
                             if (errormessage instanceof Array) {
@@ -460,28 +460,29 @@
                         if (response.message) {
                             var html = '';
                             var response = response.message;
-                            $.each(response, function (key, value) {
-                                if (typeof value == 'object') {
-                                    var inner_html = '';
-                                    $.each(value, function (k, v) {
-                                        if (typeof v == 'object') {
-                                            var inner_html1 = '';
-                                            $.each(v, function (index, vval) {
-                                                inner_html1 += '<p class="text-left" >' + index + ' : ' + vval + '</p>';
-                                            });
-                                            html += '<tr><td class="text-left" >' + key + '</td><td class="text-left" >' + inner_html1 + '</td><tr>';
-                                        } else {
-                                            inner_html += '<p class="text-left" >' + k + ' : ' + v + '</p>';
-                                        }
-
-                                    });
-                                    html += '<tr><td class="text-left" >' + key + '</td><td class="text-left" >' + inner_html + '</td><tr>';
-                                } else {
-                                    html += '<tr><td class="text-left" >' + key + '</td><td class="text-left" >' + value + '</td><tr>';
-                                }
-                            });
-                            $("#popup_content").html('<h2> Response : </h2><table class="table table-hover table-bordered">' + html + '</table>');
-
+                            if(response != null){
+                                $.each(response, function (key, value) {
+                                    if (typeof value == 'object' && value != null && key != null) {
+                                        var inner_html = '';
+                                        $.each(value, function (k, v) {
+                                            if (typeof v == 'object' && v != null && k != null) {
+                                                var inner_html1 = '';
+                                                $.each(v, function (index, vval) {
+                                                    inner_html1 += '<p class="text-left" >' + index + ' : ' + vval + '</p>';
+                                                });
+                                                html += '<tr><td class="text-left" >' + key + '</td><td class="text-left" >' + inner_html1 + '</td><tr>';
+                                            } else {
+                                                inner_html += '<p class="text-left" >' + k + ' : ' + v + '</p>';
+                                            }
+    
+                                        });
+                                        // html += '<tr><td class="text-left" >' + key + '</td><td class="text-left" >' + inner_html + '</td><tr>';
+                                    } else {
+                                        html += '<tr><td class="text-left" >' + key + '</td><td class="text-left" >' + value + '</td><tr>';
+                                    }
+                                });
+                                $("#popup_content").html('<h2> Response : </h2><table class="table table-hover table-bordered">' + html + '</table>');
+                            }
                         }
                     } else {
                         var html = '';

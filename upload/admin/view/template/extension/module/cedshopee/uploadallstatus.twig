@@ -35,11 +35,11 @@
   </div>
     
    <div class="container-fluid">
-    {% if (error_warning) %} 
+    {# {% if (error_warning) %} 
     <div class="alert alert-danger"><i class="fa fa-exclamation-circle"></i> {{ error_warning }} 
       <button type="button" class="close" data-dismiss="alert">&times;</button>
     </div>
-    {% endif %} 
+    {% endif %}  #}
     {% if (success) %} 
     <div class="alert alert-success"><i class="fa fa-check-circle"></i> {{ success }} 
       <button type="button" class="close" data-dismiss="alert">&times;</button>
@@ -54,7 +54,7 @@
             <div id="myModal" class="modal">
                 <div class="modal-content">
                     <span class="close">&times;</span>
-                    <div id="popup_content"><img src="view/image/cedshopee/Loader.gif">
+                    <div id="popup_content"><img src="view/image/cedshopee/loader.gif">
                         <h2>Please wait processing ........</h2></div>
                 </div>
             </div>

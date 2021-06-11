@@ -30,6 +30,7 @@
                         <li><a href="#tab-api" data-toggle="tab">{{ tab_api }}</a></li>
                         <li><a href="#tab-product" data-toggle="tab">{{ tab_product }}</a></li>
                         <li><a href="#tab-order" data-toggle="tab">{{ tab_order }}</a></li>
+                        <li><a href="#tab-shipping" data-toggle="tab">{{ tab_shipping_label }}</a></li>
                         <li><a href="#tab-cron" data-toggle="tab">{{ tab_cron }}</a></li>
                     </ul>
 
@@ -239,6 +240,21 @@
                             </div>
 
                             <div class="form-group">
+                                <label class="col-sm-4 control-label" for="input-order_shipping_label">{{ entry_order_shipping_label }}</label>
+                                <div class="col-sm-4">
+                                    <select name="cedshopee_order_shipping_label" id="input-order_shipping_label" class="form-control">
+                                        {% if (cedshopee_order_shipping_label) %}
+                                            <option value="1" selected="selected">{{ text_enabled }}</option>
+                                            <option value="0">{{ text_disabled }}</option>
+                                        {% else %}
+                                            <option value="1">{{ text_enabled }}</option>
+                                            <option value="0" selected="selected">{{ text_disabled }}</option>
+                                        {% endif %}
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
                                 <label class="col-sm-4 control-label" for="input-auto_order">{{ entry_auto_order }}</label>
                                 <div class="col-sm-4">
                                     <select name="cedshopee_auto_order" id="input-auto_order" class="form-control">
@@ -335,6 +351,29 @@
 
                         </div>
                         <!-- // Order Tab -->
+
+                        <!-- Shipping Tab -->
+                        <div class="tab-pane fade" id="tab-shipping">
+                            <div class="form-group">
+                                <label class="col-sm-4 control-label" for="input-seller_name">{{ entry_seller_name }}</label>
+                                <div class="col-sm-4">
+                                    <input type="text" name="cedshopee_seller_name" value="{{ cedshopee_seller_name }}" placeholder="{{ entry_seller_name }}" id="input-seller_name" class="form-control"  />
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-4 control-label" for="input-seller_add">{{ entry_seller_add }}</label>
+                                <div class="col-sm-4">
+                                    <input type="text" name="cedshopee_seller_add" value="{{ cedshopee_seller_add }}" placeholder="{{ entry_seller_add }}" id="input-seller_add" class="form-control"  />
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-4 control-label" for="input-seller_contact">{{ entry_seller_contact }}</label>
+                                <div class="col-sm-4">
+                                    <input type="text" name="cedshopee_seller_contact" value="{{ cedshopee_seller_contact }}" placeholder="{{ entry_seller_contact }}" id="input-seller_contact" class="form-control"  />
+                                </div>
+                            </div>
+                        </div>
+                        <!-- // Shipping Tab -->
 
                         <!-- Cron Tab -->
                         <div class="tab-pane fade" id="tab-cron">

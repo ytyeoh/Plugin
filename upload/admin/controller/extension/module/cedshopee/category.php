@@ -299,6 +299,7 @@ class ControllerExtensionModuleCedshopeeCategory extends Controller
                         $html .= '<div class="required" style="color: #F00; font-weight: bold;">*</div>';
                         $html .= '<input type="hidden" name="profile_attribute_mapping['.$key.'][is_mandatory]" value="1"/>';
                     } else {
+                        $html .= '<div class="required" style="color: #F00; font-weight: bold;">*</div>';
                         $html .= '<input type="hidden" name="profile_attribute_mapping['.$key.'][is_mandatory]" value="0"/>';
                     }
                     $html .= '<input type="hidden" name="profile_attribute_mapping['.$key.'][attribute_type]" value="'.$attribute['attribute_type'].'"/>';
@@ -342,6 +343,10 @@ class ControllerExtensionModuleCedshopeeCategory extends Controller
                                 $html .= $attribute_option['attribute_name'];
                                 $html .= '</option>';
                             } else if($attribute['is_mandatory'] && ($attribute_option['attribute_id']==$attribute['attribute_id'])){
+                                $html .= '<option selected="selected" value="'.$attribute_option['attribute_id'].'">';
+                                $html .= $attribute_option['attribute_name'];
+                                $html .= '</option>';
+                            } elseif($attribute_option['attribute_id']==$attribute['attribute_id']) {
                                 $html .= '<option selected="selected" value="'.$attribute_option['attribute_id'].'">';
                                 $html .= $attribute_option['attribute_name'];
                                 $html .= '</option>';

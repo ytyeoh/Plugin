@@ -69,7 +69,7 @@ class ModelExtensionModuleCedshopeeProfile extends Model {
 			wholesale = '" . $this->db->escape(json_encode($data['wholesale'])) . "',
 			profile_language = '" . $this->db->escape($data['profile_language']) . "'  WHERE id = '" . (int)$profile_id . "'");
 
-		
+		$this->db->query("DELETE FROM `".DB_PREFIX."cedshopee_profile_products` WHERE `shopee_profile_id` = '". $profile_id ."' ");
 		$this->updateProductInProfile($profile_id, $data['product_category'], $data['profile_store'], $data['product_manufacturer']);
 		$this->cache->delete('profile');
 	}

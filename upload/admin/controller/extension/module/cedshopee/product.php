@@ -33,10 +33,10 @@ class ControllerExtensionModuleCedshopeeProduct extends Controller
 
     protected function getList()
     {
-        if (isset($this->request->get['profile_name'])) {
-            $filter_profile_name = $this->request->get['profile_name'];
+        if (isset($this->request->get['profile_filter'])) {
+            $profile_filter = $this->request->get['profile_filter'];
         } else {
-            $filter_profile_name = null;
+            $profile_filter = null;
         }
 
         if (isset($this->request->get['filter_name'])) {
@@ -114,6 +114,9 @@ class ControllerExtensionModuleCedshopeeProduct extends Controller
         if (isset($this->request->get['filter_status'])) {
             $url .= '&filter_status=' . $this->request->get['filter_status'];
         }
+        if (isset($this->request->get['profile_filter'])) {
+            $url .= '&profile_filter=' . $this->request->get['profile_filter'];
+        }
 
         if (isset($this->request->get['filter_shopee_status'])) {
             $url .= '&filter_shopee_status=' . $this->request->get['filter_shopee_status'];
@@ -157,7 +160,7 @@ class ControllerExtensionModuleCedshopeeProduct extends Controller
             'filter_quantity' => $filter_quantity,
             'filter_status' => $filter_status,
             'filter_shopee_status' => $filter_shopee_status,
-            'filter_profile_name' => $filter_profile_name,
+            'profile_filter' => $profile_filter,
             'sort' => $sort,
             'order' => $order,
             'start' => ($page - 1) * $this->config->get('config_limit_admin'),
@@ -214,7 +217,7 @@ class ControllerExtensionModuleCedshopeeProduct extends Controller
                 'special' => $special,
                 'image' => $image,
                 'profile_name' => $result['title'],
-                'shopee_id' => isset($result['shopee_id']) ? $result['shopee_id'] : 0,
+                'shopee_id' => isset($result['shopee_item_id']) ? $result['shopee_item_id'] : 0,
                 'quantity' => ($cedshopee_inventry_choice == 2) ? $result['wquantity'] : $result['quantity'],
                 'status' => ($result['status'] ? $this->language->get('text_enabled') : $this->language->get('text_disabled')),
                 'cedshopee_status' => ($result['shopee_status']) ? $result['shopee_status'] : 'Not Uploaded',
@@ -228,7 +231,7 @@ class ControllerExtensionModuleCedshopeeProduct extends Controller
         $data['fetchstatus'] = $this->url->link('extension/module/cedshopee/product/fetchstatus', 'user_token=' . $this->session->data['user_token'], 'SSL');
 
         $data['filter_shopee_status'] = $filter_shopee_status;
-        $data['profile_filter'] = $filter_profile_name;
+        $data['profile_filter'] = $profile_filter;
         $data['heading_title'] = $this->language->get('heading_title');
 
         $data['text_enabled'] = $this->language->get('text_enabled');
@@ -292,6 +295,9 @@ class ControllerExtensionModuleCedshopeeProduct extends Controller
         if (isset($this->request->get['filter_status'])) {
             $url .= '&filter_status=' . $this->request->get['filter_status'];
         }
+        if (isset($this->request->get['profile_filter'])) {
+            $url .= '&profile_filter=' . $this->request->get['profile_filter'];
+        }
 
         if (isset($this->request->get['filter_shopee_status'])) {
             $url .= '&filter_shopee_status=' . $this->request->get['filter_shopee_status'];
@@ -337,6 +343,10 @@ class ControllerExtensionModuleCedshopeeProduct extends Controller
         if (isset($this->request->get['filter_status'])) {
             $url .= '&filter_status=' . $this->request->get['filter_status'];
         }
+        
+        if (isset($this->request->get['profile_filter'])) {
+            $url .= '&profile_filter=' . $this->request->get['profile_filter'];
+        }
 
         if (isset($this->request->get['filter_shopee_status'])) {
             $url .= '&filter_shopee_status=' . $this->request->get['filter_shopee_status'];
@@ -367,7 +377,7 @@ class ControllerExtensionModuleCedshopeeProduct extends Controller
         $data['filter_quantity'] = $filter_quantity;
         $data['filter_status'] = $filter_status;
         $data['filter_shopee_status'] = $filter_shopee_status;
-
+        $data['profile_filter'] = $profile_filter;
         $data['sort'] = $sort;
         $data['order'] = $order;
 

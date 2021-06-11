@@ -21,7 +21,12 @@ $_['tab_general']                   = 'General';
 $_['tab_api']                       = 'API';
 $_['tab_product']                   = 'Product';
 $_['tab_order']                     = 'Order';
+$_['tab_shipping_label']            = 'Shipping Label';
 $_['tab_cron']                      = 'Cron';
+
+$_['entry_seller_name']             = 'Seller Name';
+$_['entry_seller_add']              = 'Seller Address';
+$_['entry_seller_contact']          = 'Seller Contact';
 
 $_['text_edit']             		= 'Edit Shopee Setting';
 $_['text_module'] 					= 'Modules';
@@ -49,6 +54,7 @@ $_['entry_update_all']				= 'Update Whole Info';
 $_['entry_variable_price']  		= 'Variant Amount';
 
 $_['entry_order_email'] 			= 'Email For Shopee Orders';
+$_['entry_order_shipping_label'] 	= 'Print Shipping Label at Order Fetch';
 $_['entry_auto_order'] 				= 'Auto Reject Failed Order';
 
 $_['entry_order_import'] 			= 'Order status while import order';

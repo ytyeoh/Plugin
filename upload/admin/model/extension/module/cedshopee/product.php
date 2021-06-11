@@ -27,8 +27,8 @@ class ModelExtensionModuleCedshopeeProduct extends Model {
             $sql .= " AND pd.name LIKE '%" . $this->db->escape(trim($data['filter_name'])) . "%'";
         }
 
-        if (!empty($data['filter_profile_name'])){
-            $sql .= 'AND csp.id = '.(int)$data['filter_profile_name'];
+        if (!empty($data['profile_filter'])){
+            $sql .= 'AND csp.id = '.(int)$data['profile_filter'];
         }
 
         if (!empty($data['filter_model'])) {
@@ -144,8 +144,8 @@ class ModelExtensionModuleCedshopeeProduct extends Model {
             $sql .= " AND pd.name LIKE '%" . $this->db->escape(trim($data['filter_name'])) . "%'";
         }
 
-        if (!empty($data['filter_profile_name'])){
-            $sql .= 'AND csp.id = '.(int)$data['filter_profile_name'];
+        if (!empty($data['profile_filter'])){
+            $sql .= 'AND csp.id = '.(int)$data['profile_filter'];
         }
 
         if (!empty($data['filter_model'])) {
